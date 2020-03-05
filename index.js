@@ -2,8 +2,19 @@ const path = require("path");
 const fs = require("fs-extra");
 const fetch = require("node-fetch");
 const Twit = require("twit");
-const tokens  = require("./tokens.json");
 
+const safeRequire = () =>{
+    try{
+        return  require("./tokens.json");
+    } catch(err){
+        return {
+            APIKey : process.env.APIKey,
+            APISecretKey : process.env.APISecretKey,
+            AccessToken : process.env.AccessToken,
+            AccessTokenSecret : process.env.AccessTokenSecret
+        }
+    };
+}
 const Tweet =  (bot,jsonFile,oldJson) =>{
     let tweet;
     if(!oldJson){
@@ -95,6 +106,8 @@ const downloadFiles  = async () =>{
         console.log(err);
     });
 }
+
+const tokens = safeRequire();
 downloadFiles();
 setInterval(downloadFiles, 5*60*1000);
 

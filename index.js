@@ -9,7 +9,7 @@ const Tweet =  (bot,jsonFile) =>{
                 + `Country_Region: ${jsonFile.Country_Region}\n`
                 + `Confirmed: ${jsonFile.Confirmed}\n`
                 + `Deaths: ${jsonFile.Deaths}\n`
-                + `Recovered: ${jsonFile.Deaths}\n`
+                + `Recovered: ${jsonFile.Recovered}\n`
                 + `The data comes from: tinyurl.com/uwns6z5\n`
                 + `#Coronavirus #COVID19 #bot`  
     bot.post('statuses/update', { status: tweet }, (err, data, response) => {

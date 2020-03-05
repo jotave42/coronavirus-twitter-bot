@@ -63,7 +63,7 @@ const downloadFiles  = async () =>{
             if(fs.existsSync(fileName)){
                 const oldJson = require(fileName);
                 if( (newJson.Confirmed === oldJson.Confirmed) && (newJson.Deaths === oldJson.Deaths) && (newJson.Recovered === oldJson.Recovered) ){
-                    console.log("Noting change at: ",newJson.Country_Region);
+                    console.log("Nothing change at: ",newJson.Country_Region);
                 } else {
                     console.log("Change at: ",newJson.Country_Region);
                     saveFile(newJson, fileName);

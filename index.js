@@ -86,7 +86,7 @@ const downloadFiles  = async () =>{
                 Deaths,
                 Recovered
             };
-            if(fs.existsSync(fileName)){
+            if(fs.existsSync(fileName)){ 
                 const rawdata = fs.readFileSync(fileName);
                 const oldJson = JSON.parse(rawdata);
                 if( (newJson.Confirmed == oldJson.Confirmed) && (newJson.Deaths == oldJson.Deaths) && (newJson.Recovered == oldJson.Recovered) ){
@@ -98,13 +98,13 @@ const downloadFiles  = async () =>{
                     console.log(`[${today}] ${oldJson.Deaths} => ${newJson.Deaths}`);
                     console.log(`[${today}] ${oldJson.Recovered} => ${newJson.Recovered}`);
                     
-                    saveFile(newJson, fileName,todasy);
-                    Tweet(bot,newJson,oldJson);
+                    saveFile(newJson, fileName,today);
+                    //Tweet(bot,newJson,oldJson);
 
                 }
             } else {
                 saveFile(newJson, fileName,today);
-                Tweet(bot,newJson);
+                //Tweet(bot,newJson);
             }
          
         });

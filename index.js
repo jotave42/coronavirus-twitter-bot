@@ -61,8 +61,9 @@ const downloadFiles  = async () =>{
                 Recovered
             };
             if(fs.existsSync(fileName)){
-                const oldJson = require(fileName);
-                if( (newJson.Confirmed === oldJson.Confirmed) && (newJson.Deaths === oldJson.Deaths) && (newJson.Recovered === oldJson.Recovered) ){
+                const rawdata = fs.readFileSync(fileName);
+                const oldJson = JSON.parse(rawdata);
+                if( (newJson.Confirmed == oldJson.Confirmed) && (newJson.Deaths == oldJson.Deaths) && (newJson.Recovered == oldJson.Recovered) ){
                     console.log("Nothing change at: ",newJson.Country_Region);
                 } else {
                     console.log("Change at: ",newJson.Country_Region);
@@ -81,5 +82,5 @@ const downloadFiles  = async () =>{
     });
 }
 downloadFiles();
-setInterval(downloadFiles, 30*60*1000);
+setInterval(downloadFiles, 5*60*1000);
 

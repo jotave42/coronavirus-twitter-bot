@@ -99,12 +99,12 @@ const downloadFiles  = async () =>{
                     console.log(`[${today}] ${oldJson.Recovered} => ${newJson.Recovered}`);
                     
                     saveFile(newJson, fileName,today);
-                    //Tweet(bot,newJson,oldJson);
+                    Tweet(bot,newJson,oldJson);
 
                 }
             } else {
                 saveFile(newJson, fileName,today);
-                //Tweet(bot,newJson);
+                Tweet(bot,newJson);
             }
          
         });

@@ -92,7 +92,12 @@ const downloadFiles  = async () =>{
                 if( (newJson.Confirmed == oldJson.Confirmed) && (newJson.Deaths == oldJson.Deaths) && (newJson.Recovered == oldJson.Recovered) ){
                     console.log(`[${today}] Nothing change at: ${newJson.Country_Region}`);
                 } else {
+                    
                     console.log(`[${today}] Change at: ${newJson.Country_Region}`);
+                    console.log(`[${today}] ${oldJson.Confirmed} => ${newJson.Confirmed}`);
+                    console.log(`[${today}] ${oldJson.Deaths} => ${newJson.Deaths}`);
+                    console.log(`[${today}] ${oldJson.Recovered} => ${newJson.Recovered}`);
+                    
                     saveFile(newJson, fileName,today);
                     Tweet(bot,newJson,oldJson);
 

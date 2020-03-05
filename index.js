@@ -98,7 +98,7 @@ const downloadFiles  = async () =>{
                     console.log(`[${today}] ${oldJson.Deaths} => ${newJson.Deaths}`);
                     console.log(`[${today}] ${oldJson.Recovered} => ${newJson.Recovered}`);
                     
-                    saveFile(newJson, fileName,today);
+                    saveFile(newJson, fileName,todasy);
                     Tweet(bot,newJson,oldJson);
 
                 }

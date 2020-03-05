@@ -17,6 +17,8 @@ const safeRequire = () =>{
 }
 const Tweet =  (bot,jsonFile,oldJson) =>{
     let tweet;
+    let datetimeTweet = new Date();
+    let todayTweet = datetimeTweet.toLocaleString("pt-BR"); 
     if(!oldJson){
         tweet = `Coronavirus Update \n`
                     + `Country_Region: ${jsonFile.Country_Region}\n`
@@ -35,18 +37,16 @@ const Tweet =  (bot,jsonFile,oldJson) =>{
                     + `#Coronavirus #COVID19 #bot`  
     }
     bot.post('statuses/update', { status: tweet }, (err, data, response) => {
-        const datetime = new Date();
-        const today = datetime.toLocaleString("pt-BR"); 
         if(!err){
-                console.log(`[${today}] Tweet success`);
+                console.log(`[${todayTweet}] Tweet success`);
             } else {
                 console.log(err.message);
                 if(err.message ==="Status is a duplicate."){
-                    console.log(`[${today}] ignored`);
+                    console.log(`[${todayTweet}] ignored`);
                     return;
                 }
-                console.log(`[${today}] Tweet faild trying again`);
-                Tweet(bot,jsonFile);
+                console.log(`[${todayTweet}] Tweet faild trying again`);
+                Tweet(bot,jsonFile,oldJson);
             }
       });
 };

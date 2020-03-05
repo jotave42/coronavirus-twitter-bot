@@ -11,7 +11,7 @@ const Tweet =  (bot,jsonFile) =>{
                 + `Deaths: ${jsonFile.Deaths}\n`
                 + `Recovered: ${jsonFile.Deaths}\n`
                 + `The data comes from: tinyurl.com/uwns6z5\n`
-                + `#Coronvirus #COVID19 #bot`  
+                + `#Coronavirus #COVID19 #bot`  
     bot.post('statuses/update', { status: tweet }, (err, data, response) => {
             if(!err){
                 console.log("Tweet success");
@@ -81,5 +81,5 @@ const downloadFiles  = async () =>{
     });
 }
 downloadFiles();
-setInterval(downloadFiles, 5*60*1000);
+setInterval(downloadFiles, 30*60*1000);
 

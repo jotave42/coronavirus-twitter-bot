@@ -15,8 +15,30 @@ const safeRequire = () =>{
         }
     };
 }
-const Tweet =  (bot,jsonFile,oldJson) =>{
+const getTrends = async (bot) =>{
+    return new Promise((resolve, reject) =>{
+        bot.get('trends/place', {id:'1'}, async(err, data, response)=>{
+            const trends = data[0].trends;
+            trends.splice(10);
+            const trendsKeys = Object.keys(trends);
+            const trendsObject = [];
+            const processTrands = trendsKeys.map(elemId => {
+            const element = trends[elemId];
+                trand = {
+                    name: element.name,
+                    len: element.name.length
+                }
+                trendsObject.push(trand);
+            });
+            await Promise.all(processTrands);
+            resolve(trendsObject);
+        
+        });
+    });
+};
+const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
     let tweet;
+    const maxlen = 280;
     let datetimeTweet = new Date();
     let todayTweet = datetimeTweet.toLocaleString("pt-BR"); 
     if(!oldJson){
@@ -26,7 +48,7 @@ const Tweet =  (bot,jsonFile,oldJson) =>{
                     + `Deaths: ${jsonFile.Deaths}\n`
                     + `Recovered: ${jsonFile.Recovered}\n`
                     + `The data comes from: tinyurl.com/uwns6z5\n`
-                    + `#Coronavirus #COVID19 #bot`  
+                    + `#Coronavirus #COVID19 #bot\n`  
     } else {
         tweet = `Coronavirus Update \n`
                     + `Country_Region: ${jsonFile.Country_Region}\n`
@@ -34,7 +56,16 @@ const Tweet =  (bot,jsonFile,oldJson) =>{
                     + `Deaths: ${oldJson.Deaths} => ${jsonFile.Deaths}\n`
                     + `Recovered: ${oldJson.Recovered} => ${jsonFile.Recovered}\n`
                     + `The data comes from: tinyurl.com/uwns6z5\n`
-                    + `#Coronavirus #COVID19 #bot`  
+                    + `#Coronavirus #COVID19 #bot\n`  
+    }
+    let tweetLen = tweet.length; 
+    for (const trend of trendsJson) {
+        const newTrendLen = trend.len + 1 // + 1  in order to add a space 
+        const newLen = tweetLen + newTrendLen;
+        if(newLen <= maxlen){
+            tweet += trend.name + " ";
+            tweetLen = newLen;
+        }
     }
     bot.post('statuses/update', { status: tweet }, (err, data, response) => {
         if(!err){
@@ -70,6 +101,8 @@ const downloadFiles  = async () =>{
     const urlRequest =`https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/2/query?f=json&where=Confirmed%20%3E%200&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Confirmed%20desc&resultOffset=0&resultRecordCount=200&cacheHint=true` 
     const currentFolder = __dirname;	
     const fileFolder = path.join(currentFolder,"Downloads");
+    const trendsJson =  await getTrends(bot);
+
     if (!fs.existsSync(fileFolder)){
         
         fs.mkdirSync(fileFolder,{recursive: true});
@@ -99,12 +132,12 @@ const downloadFiles  = async () =>{
                     console.log(`[${today}] ${oldJson.Recovered} => ${newJson.Recovered}`);
                     
                     saveFile(newJson, fileName,today);
-                    Tweet(bot,newJson,oldJson);
+                    Tweet(bot,trendsJson,newJson,oldJson);
 
                 }
             } else {
                 saveFile(newJson, fileName,today);
-                Tweet(bot,newJson);
+                Tweet(bot,trendsJson,newJson);
             }
          
         });

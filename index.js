@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 const Twit = require("twit");
 const tokens  = require("./tokens.json");
 
-const Tweet = async (bot,jsonFile) =>{
+const Tweet =  (bot,jsonFile) =>{
     const tweet = `Coronavirus Update \n`
                 + `Country_Region: ${jsonFile.Country_Region}\n`
                 + `Confirmed: ${jsonFile.Confirmed}\n`
@@ -12,9 +12,17 @@ const Tweet = async (bot,jsonFile) =>{
                 + `Recovered: ${jsonFile.Deaths}\n`
                 + `The data comes from: tinyurl.com/uwns6z5\n`
                 + `#Coronvirus #COVID19 #bot`  
-    bot.post('statuses/update', { status: tweet }, function(err, data, response) {
+    bot.post('statuses/update', { status: tweet }, (err, data, response) => {
             if(!err){
-                console.log("Tweet success")
+                console.log("Tweet success");
+            } else {
+                console.log(err.message);
+                if(err.message ==="Status is a duplicate."){
+                    console.log("ignored");
+                    return;
+                }
+                console.log("Tweet faild trying again");
+                Tweet(bot,jsonFile);
             }
       });
 };
@@ -72,6 +80,6 @@ const downloadFiles  = async () =>{
         console.log(err);
     });
 }
-
+downloadFiles();
 setInterval(downloadFiles, 5*60*1000);
 

@@ -35,6 +35,7 @@ const Tweet =  (bot,jsonFile,oldJson) =>{
                     + `#Coronavirus #COVID19 #bot`  
     }
     bot.post('statuses/update', { status: tweet }, (err, data, response) => {
+        const datetime = new Date();
         const today = datetime.toLocaleString("pt-BR"); 
         if(!err){
                 console.log(`[${today}] Tweet success`);

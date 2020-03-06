@@ -75,7 +75,7 @@ const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
             }
         }
     }
-    console.log(`[${todayTweet}] Tweeting: \n${tweet}\n length:${tweet.length}}`)
+    console.log(`[${todayTweet}] Tweeting: \n[${todayTweet}]${tweet}\n[${todayTweet}]length:${tweet.length}}`)
     bot.post('statuses/update', { status: tweet }, (err, data, response) => {
         if(!err){
                 console.log(`[${todayTweet}] Tweet success`);

@@ -81,8 +81,7 @@ const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
                 console.log(`[${todayTweet}] Tweet success`);
             } else {
                 
-                console.log((`[${todayTweet}] ERROR CODE: ${err.code}, MSG: ${err.message}`);
-                console.log(err.code);
+                console.log(`[${todayTweet}] ERROR CODE: ${err.code}, MSG: ${err.message}`);
                 if ( (err.message ==="Status is a duplicate.") ||(err.code == 185)){
                     console.log(`[${todayTweet}] ignored`);
                     return;

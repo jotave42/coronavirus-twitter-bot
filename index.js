@@ -42,7 +42,7 @@ const getTrends = async (bot) =>{
 };
 const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
     let tweet;
-    const maxlen = 270;
+    const maxlen = 260;
     let datetimeTweet = new Date();
     let todayTweet = datetimeTweet.toLocaleString("pt-BR"); 
     if(!oldJson){
@@ -75,7 +75,7 @@ const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
             }
         }
     }
-
+    console.log(`[${todayTweet}] Tweeting: \n${tweet}\n length:${tweet.length}}`)
     bot.post('statuses/update', { status: tweet }, (err, data, response) => {
         if(!err){
                 console.log(`[${todayTweet}] Tweet success`);

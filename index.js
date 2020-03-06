@@ -68,7 +68,7 @@ const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
             for (const trend of trendsJson) {
                 const newTrendLen = trend.len + 1 // + 1  in order to add a space 
                 const newLen = tweetLen + newTrendLen;
-                if(newLen <= maxlen){
+                if(newLen < maxlen){
                     tweet += trend.name + " ";
                     tweetLen = newLen;
                 }
@@ -86,7 +86,7 @@ const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
                     return;
                 }
                 console.log(`[${todayTweet}] Tweet faild trying again`);
-                Tweet(bot,jsonFile,oldJson);
+                Tweet(bot,trendsJson,jsonFile,oldJson);
             }
       });
 };

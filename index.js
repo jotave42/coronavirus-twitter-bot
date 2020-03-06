@@ -42,7 +42,7 @@ const getTrends = async (bot) =>{
 };
 const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
     let tweet;
-    const maxlen = 280;
+    const maxlen = 270;
     let datetimeTweet = new Date();
     let todayTweet = datetimeTweet.toLocaleString("pt-BR"); 
     if(!oldJson){

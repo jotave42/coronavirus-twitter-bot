@@ -18,7 +18,11 @@ const safeRequire = () =>{
 const getTrends = async (bot) =>{
     return new Promise((resolve, reject) =>{
         bot.get('trends/place', {id:'1'}, async(err, data, response)=>{
-            const trends = data[0].trends;
+            const trends = data[0].trends.filter((elem)=>{
+                if(elem.name[0] == "#" ){
+                    return elem
+               }
+            });
             trends.splice(10);
             const trendsKeys = Object.keys(trends);
             const trendsObject = [];
@@ -59,14 +63,19 @@ const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
                     + `#Coronavirus #COVID19 #bot\n`  
     }
     let tweetLen = tweet.length; 
-    for (const trend of trendsJson) {
-        const newTrendLen = trend.len + 1 // + 1  in order to add a space 
-        const newLen = tweetLen + newTrendLen;
-        if(newLen <= maxlen){
-            tweet += trend.name + " ";
-            tweetLen = newLen;
+    if(trendsJson){
+        if(trendsJson.length>0){
+            for (const trend of trendsJson) {
+                const newTrendLen = trend.len + 1 // + 1  in order to add a space 
+                const newLen = tweetLen + newTrendLen;
+                if(newLen <= maxlen){
+                    tweet += trend.name + " ";
+                    tweetLen = newLen;
+                }
+            }
         }
     }
+
     bot.post('statuses/update', { status: tweet }, (err, data, response) => {
         if(!err){
                 console.log(`[${todayTweet}] Tweet success`);

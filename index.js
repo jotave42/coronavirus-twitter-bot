@@ -42,7 +42,7 @@ const getTrends = async (bot) =>{
 };
 const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
     let tweet;
-    const maxlen = 260;
+    const maxlen = 250;
     let datetimeTweet = new Date();
     let todayTweet = datetimeTweet.toLocaleString("pt-BR"); 
     if(!oldJson){
@@ -82,10 +82,10 @@ const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
             } else {
                 
                 console.log(`[${todayTweet}] ERROR CODE: ${err.code}, MSG: ${err.message}`);
-                if ( (err.message ==="Status is a duplicate.") ||(err.code == 185)){
-                    console.log(`[${todayTweet}] ignored`);
-                    return;
+                if (err.code == 186 ){
+                    console.log(`[${todayTweet}] Tweeting: \n${tweet}\n length:${tweet.length}}`)
                 }
+
                 console.log(`[${todayTweet}] Tweet ${jsonFile.Country_Region} faild i'll try next time\n `);
             }
       });

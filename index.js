@@ -86,7 +86,7 @@ const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
                     console.log(`[${todayTweet}] ignored`);
                     return;
                 }
-                console.log(`[${todayTweet}] Tweet faild i'll try next time);
+                console.log(`[${todayTweet}] Tweet faild i'll try next time`);
             }
       });
 };

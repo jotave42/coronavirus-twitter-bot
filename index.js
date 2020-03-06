@@ -82,8 +82,7 @@ const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
             } else {
                 
                 console.log(err.message);
-                console.log(err);
-                if(err.message ==="Status is a duplicate."){
+                if ( (err.message ==="Status is a duplicate.") ||(err.code == 185)){
                     console.log(`[${todayTweet}] ignored`);
                     return;
                 }
@@ -158,5 +157,6 @@ const downloadFiles  = async () =>{
 }
 
 const tokens = safeRequire();
-setInterval(downloadFiles, 25*60*1000);
+downloadFiles();
+setInterval(downloadFiles, 20*60*1000);
 

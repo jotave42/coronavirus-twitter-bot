@@ -230,10 +230,11 @@ const downloadFiles  = async () =>{
     const currentFolder = __dirname;
 
     await getCoronaNumbersSource1(today, currentFolder, bot, trendsJson);
-    getCoronaNumbersSource2(today, currentFolder, bot, trendsJson).then(()=>{
+    /*getCoronaNumbersSource2(today, currentFolder, bot, trendsJson).then(()=>{
 
          console.log(`[${today}] Bot Finished...`);
-     });
+     });*/
+     console.log(`[${today}] Bot Finished...`);
 }
 
 const tokens = safeRequire();

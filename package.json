@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
     "fs-extra": "^8.1.0",
     "node-fetch": "^2.6.0",
     "path": "^0.12.7",
+    "puppeteer": "^2.1.1",
     "twit": "^2.2.11"
   },
   "devDependencies": {},

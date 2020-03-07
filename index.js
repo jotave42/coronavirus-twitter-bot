@@ -81,7 +81,6 @@ const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
                 }
             }
         }
-
         bot.post('statuses/update', { status: tweet }, (err, data, response) => {
             if(!err){
                     resolve(`[${todayTweet}] Tweet success`);
@@ -147,7 +146,10 @@ const getCoronaNumbersSource2 = async (today, currentFolder, bot, trendsJson) =>
         fs.mkdirSync(fileFolder,{recursive: true});
     }
 	console.log(`[${today}] Opening browser.`);
-	const browser = await pup.launch();
+	const browser = await pup.launch({args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+      ],});
     const page = await browser.newPage();
     await page.setDefaultNavigationTimeout(0); 
 	await page.setJavaScriptEnabled(false);
@@ -230,10 +232,9 @@ const downloadFiles  = async () =>{
     const currentFolder = __dirname;
 
     await getCoronaNumbersSource1(today, currentFolder, bot, trendsJson);
-    /*getCoronaNumbersSource2(today, currentFolder, bot, trendsJson).then(()=>{
-
+    getCoronaNumbersSource2(today, currentFolder, bot, trendsJson).then(()=>{
          console.log(`[${today}] Bot Finished...`);
-     });*/
+     });
      console.log(`[${today}] Bot Finished...`);
 }
 

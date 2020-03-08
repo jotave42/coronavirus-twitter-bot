@@ -48,11 +48,11 @@ const getTrends = async (bot) =>{
 const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
     return new Promise((resolve, reject) =>{
         const { bot, trendsJson } = context;
-        console.log(`[${todayTweet}] previous_id: ${previous_id}`);
         let tweet =""; //(previous_id) ? `@covid_19bot\n` : ``;
         const maxlen = 250;
         let datetimeTweet = new Date();
         let todayTweet = datetimeTweet.toLocaleString("pt-BR"); 
+        console.log(`[${todayTweet}] previous_id: ${previous_id}`);
         if(!oldJson){
             tweet += `Coronavirus Update \n`
                         + `Country_Region: ${jsonFile.Country_Region}\n`

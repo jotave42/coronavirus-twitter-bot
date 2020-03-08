@@ -52,7 +52,6 @@ const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
         const maxlen = 250;
         let datetimeTweet = new Date();
         let todayTweet = datetimeTweet.toLocaleString("pt-BR"); 
-        console.log(`[${todayTweet}] previous_id: ${previous_id}`);
         if(!oldJson){
             tweet += `Coronavirus Update \n`
                         + `Country_Region: ${jsonFile.Country_Region}\n`
@@ -83,6 +82,7 @@ const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
                 }
             }
         }
+        //in_reply_to_status_id: previous_id
         bot.post('statuses/update', { status: tweet}, (err, data, response) => {
             if(!err){
                     const id =  data.id_str; 
@@ -97,7 +97,7 @@ const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
 };
 
 const TweetThread =  async (statuses, context) => {
-   await statuses.reduce(async (previous_id_promise, status) => {
+    await statuses.reduce(async (previous_id_promise, status) => {
         // The previous_id param will contain the previous tweet's id
         // so we can chain them in a thread, if there's more than one.
 

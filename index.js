@@ -48,6 +48,7 @@ const getTrends = async (bot) =>{
 const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
     return new Promise((resolve, reject) =>{
         const { bot, trendsJson } = context;
+        console.log(`[${todayTweet}] previous_id: ${previous_id}`);
         let tweet =""; //(previous_id) ? `@covid_19bot\n` : ``;
         const maxlen = 250;
         let datetimeTweet = new Date();

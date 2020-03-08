@@ -48,7 +48,6 @@ const getTrends = async (bot) =>{
 const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
     return new Promise((resolve, reject) =>{
         const { bot, trendsJson } = context;
-        console.log("previous_id", previous_id);
         let tweet = (previous_id) ? `@covid_19bot\n` : ``;
         const maxlen = 250;
         let datetimeTweet = new Date();
@@ -83,9 +82,9 @@ const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
                 }
             }
         }
-        bot.post('statuses/update', { status: tweet, in_reply_to_status_id: previous_id, auto_populate_reply_metadata: true }, (err, data, response) => {
+        bot.post('statuses/update', { status: tweet, in_reply_to_status_id: previous_id }, (err, data, response) => {
             if(!err){
-                    const id = data.id; 
+                    const id =  data.id_str; 
                     console.log(`[${todayTweet}] Tweet success`);
                     resolve(id);
                 } else {
@@ -263,7 +262,7 @@ const downloadFiles  = async () =>{
         const statusesKeys = Object.keys(statuses);
         const processStatuses = statusesKeys.map(elemId => {
             const element = statuses[elemId];
-        
+
             if(element.tweeted){
                 saveFile(element.newJson,element.fileName,today);
             }
@@ -275,5 +274,5 @@ const downloadFiles  = async () =>{
 
 const tokens = safeRequire();
 downloadFiles();
-setInterval(downloadFiles, 20*60*1000);
+setInterval(downloadFiles, 1*60*1000);
 

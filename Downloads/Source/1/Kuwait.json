@@ -1,7 +1,7 @@
 {
 	"Country_Region": "Kuwait",
-	"Confirmed": 61,
+	"Confirmed": 64,
 	"Deaths": 0,
-	"Recovered": 0,
+	"Recovered": 1,
 	"DataSource": "tinyurl.com/uwns6z5"
 }

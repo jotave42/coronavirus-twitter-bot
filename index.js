@@ -45,14 +45,16 @@ const getTrends = async (bot) =>{
     });
 };
 
-const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
+const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
     return new Promise((resolve, reject) =>{
-        let tweet;
+        const { bot, trendsJson } = context;
+        console.log("previous_id", previous_id);
+        let tweet = (previous_id) ? `@covid_19bot\n` : ``;
         const maxlen = 250;
         let datetimeTweet = new Date();
         let todayTweet = datetimeTweet.toLocaleString("pt-BR"); 
         if(!oldJson){
-            tweet = `Coronavirus Update \n`
+            tweet += `Coronavirus Update \n`
                         + `Country_Region: ${jsonFile.Country_Region}\n`
                         + `Confirmed: ${jsonFile.Confirmed}\n`
                         + `Deaths: ${jsonFile.Deaths}\n`
@@ -60,7 +62,7 @@ const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
                         + `The data comes from: ${jsonFile.DataSource}\n`
                         + `#Coronavirus #COVID19 #bot\n`  
         } else {
-            tweet = `Coronavirus Update \n`
+            tweet += `Coronavirus Update \n`
                         + `Country_Region: ${jsonFile.Country_Region}\n`
                         + `Confirmed: ${oldJson.Confirmed} => ${jsonFile.Confirmed}\n`
                         + `Deaths: ${oldJson.Deaths} => ${jsonFile.Deaths}\n`
@@ -81,22 +83,45 @@ const Tweet =  (bot,trendsJson,jsonFile,oldJson) =>{
                 }
             }
         }
-        bot.post('statuses/update', { status: tweet }, (err, data, response) => {
+        bot.post('statuses/update', { status: tweet, in_reply_to_status_id: previous_id, auto_populate_reply_metadata: true }, (err, data, response) => {
             if(!err){
-                    resolve(`[${todayTweet}] Tweet success`);
-                } else {                    
-                    reject(`[${todayTweet}] ERROR CODE: ${err.code}, MSG: ${err.message}`);
+                    const id = data.id; 
+                    console.log(`[${todayTweet}] Tweet success`);
+                    resolve(id);
+                } else {
+                    console.log(`[${todayTweet}] ERROR CODE: ${err.code}, MSG: ${err.message}`);
+                    resolve(undefined);               
                 }
         });
     });
 };
+
+const TweetThread =  async (statuses, context) => {
+   await statuses.reduce(async (previous_id_promise, status) => {
+        // The previous_id param will contain the previous tweet's id
+        // so we can chain them in a thread, if there's more than one.
+
+        const { newJson, oldJson } = status;
+        let previous_id; 
+        if(previous_id_promise){
+            previous_id =await Promise.resolve(previous_id_promise);
+        }
+        const  idPromisse = await Tweet(context, newJson, oldJson, previous_id);
+        const id = await Promise.resolve(idPromisse);
+        if(id){
+            status.tweeted = true;
+        }
+        return id || previous_id;
+    }, null);
+};
+
 
 const saveFile =  (jsonFile, fileName,today) => {
     fs.outputJsonSync(fileName, jsonFile, { spaces: "\t" })
     console.log(`[${today}] File ${fileName} saved.`);
 };
 
-const informationUpdated = (fileName, newJson,today,bot,trendsJson) =>{
+const informationUpdated = (fileName, newJson,today,statuses) =>{
     if(fs.existsSync(fileName)){ 
         const rawdata = fs.readFileSync(fileName);
         const oldJson = JSON.parse(rawdata);
@@ -104,23 +129,20 @@ const informationUpdated = (fileName, newJson,today,bot,trendsJson) =>{
             return false;
         } else {
             console.log(`[${today}] Change at: ${newJson.Country_Region}`);
-            
-            Tweet(bot,trendsJson,newJson,oldJson).then((res)=>{
-                console.log(res);
-                saveFile(newJson, fileName,today);
-            }).catch((err)=>{
-                console.log(res);
+            statuses.push({
+                newJson,
+                oldJson,
+                fileName,
+                tweeted : false,
             });
             return true;
         }
     } else {
         console.log(`[${today}] NEW: ${newJson.Country_Region}`);
-    
-        Tweet(bot,trendsJson,newJson).then((res)=>{
-            console.log(res);
-            saveFile(newJson, fileName,today);
-        }).catch((err)=>{
-            console.log(err);
+        statuses.push({
+            newJson,
+            fileName,
+            tweeted : false,
         });
         return true;
     }
@@ -134,7 +156,7 @@ const checkAndCreateFolder = (fileFolder) => {
     return true;
 };
 
-const getCoronaNumbersSource2 = async (today, currentFolder, bot, trendsJson) => {
+const getCoronaNumbersSource2 = async (today, currentFolder,statuses) => {
 
     console.log(`[${today}] Starting Download From Source 2..`);
 
@@ -171,8 +193,9 @@ const getCoronaNumbersSource2 = async (today, currentFolder, bot, trendsJson) =>
                 "DataSource" : "tinyurl.com/s4gvvck"
             };
 			const jsonFileName = newJson.Country_Region.replace(':',"")+".json";
-			const fileName = path.join(fileFolder,jsonFileName);
-            informationUpdated(fileName,newJson,today,bot,trendsJson);
+            const fileName = path.join(fileFolder,jsonFileName);
+            
+            informationUpdated(fileName,newJson,today,statuses);
 		
 
 		});
@@ -182,7 +205,7 @@ const getCoronaNumbersSource2 = async (today, currentFolder, bot, trendsJson) =>
 
 
 };
-const getCoronaNumbersSource1 = async (today, currentFolder, bot, trendsJson) => {
+const getCoronaNumbersSource1 = async (today, currentFolder,statuses) => {
     console.log(`[${today}] Starting Download From Source 1..`);
 
    
@@ -204,7 +227,7 @@ const getCoronaNumbersSource1 = async (today, currentFolder, bot, trendsJson) =>
                 DataSource : "tinyurl.com/uwns6z5"
             };
 
-            informationUpdated(fileName,newJson,today,bot,trendsJson);
+            informationUpdated(fileName,newJson,today,statuses);
 
          
         });
@@ -230,10 +253,23 @@ const downloadFiles  = async () =>{
     console.log(`[${today}] Getin Trending Topics...`);
     const trendsJson =  await getTrends(bot);
     const currentFolder = __dirname;
+    const statuses = []; // here we gonna save the  tweets status 
+    await getCoronaNumbersSource1(today, currentFolder,statuses);
+    getCoronaNumbersSource2(today, currentFolder, statuses).then(async ()=>{
 
-    await getCoronaNumbersSource1(today, currentFolder, bot, trendsJson);
-    getCoronaNumbersSource2(today, currentFolder, bot, trendsJson).then(()=>{
-         console.log(`[${today}] Bot Finished...`);
+        const context = { bot, trendsJson };
+
+        await TweetThread(statuses, context);
+        const statusesKeys = Object.keys(statuses);
+        const processStatuses = statusesKeys.map(elemId => {
+            const element = statuses[elemId];
+        
+            if(element.tweeted){
+                saveFile(element.newJson,element.fileName,today);
+            }
+        });
+        Promise.all(processStatuses);
+        console.log(`[${today}] Bot Finished...`);
      });
 }
 

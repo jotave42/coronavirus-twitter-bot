@@ -82,8 +82,6 @@ const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
                 }
             }
         }
-        resolve(1);
-        return
         bot.post('statuses/update', { status: tweet}, (err, data, response) => {
             if(!err){
                     const id =  data.id_str; 

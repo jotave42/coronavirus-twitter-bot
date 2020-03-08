@@ -274,5 +274,5 @@ const downloadFiles  = async () =>{
 
 const tokens = safeRequire();
 downloadFiles();
-setInterval(downloadFiles, 1*60*1000);
+setInterval(downloadFiles, 20*60*1000);
 

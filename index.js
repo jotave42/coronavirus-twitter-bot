@@ -48,7 +48,7 @@ const getTrends = async (bot) =>{
 const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
     return new Promise((resolve, reject) =>{
         const { bot, trendsJson } = context;
-        let tweet = (previous_id) ? `@covid_19bot\n` : ``;
+        let tweet =""; //(previous_id) ? `@covid_19bot\n` : ``;
         const maxlen = 250;
         let datetimeTweet = new Date();
         let todayTweet = datetimeTweet.toLocaleString("pt-BR"); 
@@ -114,7 +114,6 @@ const TweetThread =  async (statuses, context) => {
     }, null);
 };
 
-
 const saveFile =  (jsonFile, fileName,today) => {
     fs.outputJsonSync(fileName, jsonFile, { spaces: "\t" })
     console.log(`[${today}] File ${fileName} saved.`);
@@ -146,7 +145,8 @@ const informationUpdated = (fileName, newJson,today,statuses) =>{
         return true;
     }
     
-}
+};
+
 const checkAndCreateFolder = (fileFolder) => {
     if (!fs.existsSync(fileFolder)){
         
@@ -204,6 +204,7 @@ const getCoronaNumbersSource2 = async (today, currentFolder,statuses) => {
 
 
 };
+
 const getCoronaNumbersSource1 = async (today, currentFolder,statuses) => {
     console.log(`[${today}] Starting Download From Source 1..`);
 
@@ -270,7 +271,7 @@ const downloadFiles  = async () =>{
         Promise.all(processStatuses);
         console.log(`[${today}] Bot Finished...`);
      });
-}
+};
 
 const tokens = safeRequire();
 downloadFiles();

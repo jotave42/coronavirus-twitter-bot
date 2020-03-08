@@ -82,7 +82,9 @@ const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
                 }
             }
         }
-        bot.post('statuses/update', { status: tweet, in_reply_to_status_id: previous_id }, (err, data, response) => {
+        resolve(1);
+        return
+        bot.post('statuses/update', { status: tweet}, (err, data, response) => {
             if(!err){
                     const id =  data.id_str; 
                     console.log(`[${todayTweet}] Tweet success`);

@@ -90,6 +90,7 @@ const Tweet = (context, jsonFile, oldJson, previous_id) => {
                 }
             }
         }
+
         bot.post('statuses/update', {
             status: tweet,
             in_reply_to_status_id: previous_id,
@@ -117,7 +118,7 @@ const TweetThread = async (statuses, context) => {
         const previous_id = await previous_id_promise;
         const id = await Tweet(context, newJson, oldJson, previous_id);
         log(`Sleep`);
-        await sleep(2500);
+        await sleep(3000);
         if (id) {
             status.tweeted = true;
             status.id = id;
@@ -200,6 +201,19 @@ const getCoronaNumbersSource2 = async (currentFolder, statuses) => {
 
     let $ = cheerio.load(bodyHTML);
     log(`Geting Data.`);
+    const expectHead = [`Country,Other`,`TotalCases`,'NewCases',`TotalDeaths`,`NewDeaths`,`TotalRecovered`,`ActiveCases`,`Serious,Critical`,`Tot Cases/1M pop`];
+    let headCorrect = true;
+    $("#main_table_countries thead tr > th").each((index,element) =>{
+        const headText = $(`#main_table_countries thead tr th:nth-child(${index+1})`).text().trim();
+        if(! headText === expectHead[index]){
+            headCorrect = false;
+        }
+    });
+    if(!headCorrect){
+        await browser.close();
+        throw new Error(`The Table Head is incorrect`);
+    }
+
     $("#main_table_countries tbody tr").each(function (index, element) {
         const $document = $(this);
         const newJson = {
@@ -220,10 +234,9 @@ const getCoronaNumbersSource2 = async (currentFolder, statuses) => {
 
 const getCoronaNumbersSource1 = async (currentFolder, statuses) => {
     log(`Starting Download From Source 1..`);
-    const urlRequest = `https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/2/query?f=json&where=Confirmed%20%3E%200&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Confirmed%20desc&resultOffset=0&resultRecordCount=200&cacheHint=true`;
+    const urlRequest =  `https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/2/query?f=json&where=Confirmed%20%3E%200&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Confirmed%20desc&resultOffset=0&resultRecordCount=200&cacheHint=true`;
     const fileFolder = path.join(currentFolder, "Downloads", "Source", "1");
     checkAndCreateFolder(fileFolder);
-
     return fetch(urlRequest).then(async (res) => {
         const data = await res.json();
         data.features.forEach((element) => {
@@ -264,13 +277,12 @@ const downloadFiles = async () => {
     const trendsJson = await getTrends(bot).catch((err) =>  log(`${err}`));
     const currentFolder = __dirname;
     const statuses = []; // here we gonna save the  tweets status
-    await getCoronaNumbersSource1(currentFolder, statuses);
+    await getCoronaNumbersSource1(currentFolder, statuses).catch((err)=>{log(`ERROR: ${err}`);});
     getCoronaNumbersSource2(currentFolder, statuses).then(async () => {
         const context = {
             bot,
             trendsJson,
-        };
-
+        }
         const updatedStatus = await TweetThread(statuses, context);
         const statusesKeys = Object.keys(updatedStatus);
         statusesKeys.forEach(elemId => {
@@ -279,6 +291,9 @@ const downloadFiles = async () => {
                 saveFile(element.newJson, element.fileName);
             }
         });
+        log(`Bot Finished...`);
+    }).catch((err)=>{
+        log(err);
         log(`Bot Finished...`);
     });
 };

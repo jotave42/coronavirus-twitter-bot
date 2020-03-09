@@ -1,7 +1,7 @@
 {
-	"Country_Region": "Total",
-	"Confirmed": 111753,
-	"Deaths": 3888,
-	"Recovered": 62722,
+	"Country_Region": "Total:",
+	"Confirmed": 114231,
+	"Deaths": 4005,
+	"Recovered": 62834,
 	"DataSource": "tinyurl.com/s4gvvck"
 }

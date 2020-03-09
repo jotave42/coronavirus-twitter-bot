@@ -82,7 +82,6 @@ const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
                 }
             }
         }
-        //in_reply_to_status_id: previous_id
         bot.post('statuses/update', { status: tweet, in_reply_to_status_id: previous_id}, (err, data, response) => {
             if(!err){
                     const id =  data.id_str; 
@@ -96,7 +95,7 @@ const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
     });
 };
 
-const TweetThread =  async (statuses, context) => {
+const TweetThread =  async (statuses, context, today) => {
     await statuses.reduce(async (previous_id_promise, status) => {
         // The previous_id param will contain the previous tweet's id
         // so we can chain them in a thread, if there's more than one.
@@ -107,7 +106,8 @@ const TweetThread =  async (statuses, context) => {
             previous_id =await Promise.resolve(previous_id_promise);
         }
         const  idPromisse = await Tweet(context, newJson, oldJson, previous_id);
-        await sleep(2000);
+        console.log(`[${today}] Sleep`);
+        await sleep(2500);
         const id = await Promise.resolve(idPromisse);
         if(id){
             status.tweeted = true;
@@ -262,7 +262,7 @@ const downloadFiles  = async () =>{
 
         const context = { bot, trendsJson };
 
-        await TweetThread(statuses, context);
+        await TweetThread(statuses, context, today);
         const statusesKeys = Object.keys(statuses);
         const processStatuses = statusesKeys.map(elemId => {
             const element = statuses[elemId];
@@ -278,5 +278,5 @@ const downloadFiles  = async () =>{
 
 const tokens = safeRequire();
 downloadFiles();
-setInterval(downloadFiles, 1*60*1000);
+setInterval(downloadFiles, 20*60*1000);
 

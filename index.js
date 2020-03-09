@@ -22,25 +22,29 @@ const safeRequire = () =>{
 const getTrends = async (bot) =>{
     return new Promise((resolve, reject) =>{
         bot.get('trends/place', {id:'1'}, async(err, data, response)=>{
-            const trends = data[0].trends.filter((elem)=>{
-                if(elem.name[0] == "#" ){
-                    return elem
-               }
-            });
-            trends.splice(10);
-            const trendsKeys = Object.keys(trends);
-            const trendsObject = [];
-            const processTrands = trendsKeys.map(elemId => {
-            const element = trends[elemId];
-                trand = {
-                    name: element.name.trim(),
-                    len: element.name.length
+
+            if(!err){
+                const trends = data[0].trends.filter((elem)=>{
+                    if(elem.name[0] == "#" ){
+                        return elem
                 }
-                trendsObject.push(trand);
-            });
-            await Promise.all(processTrands);
-            resolve(trendsObject);
-        
+                });
+                trends.splice(10);
+                const trendsKeys = Object.keys(trends);
+                const trendsObject = [];
+                const processTrands = trendsKeys.map(elemId => {
+                const element = trends[elemId];
+                    trand = {
+                        name: element.name.trim(),
+                        len: element.name.length
+                    }
+                    trendsObject.push(trand);
+                });
+                await Promise.all(processTrands);
+                resolve(trendsObject);
+            }else{
+                resolve(undefined);
+            }
         });
     });
 };
@@ -106,8 +110,8 @@ const TweetThread =  async (statuses, context, today) => {
             previous_id =await Promise.resolve(previous_id_promise);
         }
         const  idPromisse = await Tweet(context, newJson, oldJson, previous_id);
-        console.log(`[${today}] Sleep`);
-        await sleep(2500);
+        //console.log(`[${today}] Sleep`);
+        //await sleep(2500);
         const id = await Promise.resolve(idPromisse);
         if(id){
             status.tweeted = true;
@@ -188,13 +192,13 @@ const getCoronaNumbersSource2 = async (today, currentFolder,statuses) => {
 	$("#main_table_countries tbody tr").each(function (index, element) {
 			const $document = $(this);
 			const newJson =  {
-                "Country_Region" : $document.find("td:nth-child(1) > span").text().trim() != "" ? $document.find("td:nth-child(1) > span").text().trim() : $document.find("td:nth-child(1)").text().trim(),
+                "Country_Region" : $document.find("td:nth-child(1) > span").text().trim() != "" ? $document.find("td:nth-child(1) > span").text().trim().replace(':',"") : $document.find("td:nth-child(1)").text().trim().replace(':',""),
                 "Confirmed" : parseInt( $document.find("td:nth-child(2)").text().trim().replace(',','') ),
                 "Deaths" :  $document.find("td:nth-child(4)").text().trim() == "" ? 0 : parseInt($document.find("td:nth-child(4)").text().trim().replace(',','')),
                 "Recovered" : $document.find("td:nth-child(6)").text().trim() == "" ? 0 : parseInt($document.find("td:nth-child(6)").text().trim().replace(',','')),
                 "DataSource" : "tinyurl.com/s4gvvck"
             };
-			const jsonFileName = newJson.Country_Region.replace(':',"")+".json";
+			const jsonFileName = newJson.Country_Region+".json";
             const fileName = path.join(fileFolder,jsonFileName);
             
             informationUpdated(fileName,newJson,today,statuses);
@@ -266,7 +270,7 @@ const downloadFiles  = async () =>{
         const statusesKeys = Object.keys(statuses);
         const processStatuses = statusesKeys.map(elemId => {
             const element = statuses[elemId];
-
+            console.log(`[${today}] tweeted: ${element.tweeted}`);  
             if(element.tweeted){
                 saveFile(element.newJson,element.fileName,today);
             }

@@ -110,8 +110,8 @@ const TweetThread =  async (statuses, context, today) => {
             previous_id =await Promise.resolve(previous_id_promise);
         }
         const  idPromisse = await Tweet(context, newJson, oldJson, previous_id);
-        //console.log(`[${today}] Sleep`);
-        //await sleep(2500);
+        console.log(`[${today}] Sleep`);
+        await sleep(2500);
         const id = await Promise.resolve(idPromisse);
         if(id){
             status.tweeted = true;

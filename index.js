@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 const Twit = require("twit");
 const pup = require("puppeteer");
 const cheerio = require("cheerio");
-
+const sleep = require('util').promisify(setTimeout);
 
 const safeRequire = () =>{
     try{
@@ -48,7 +48,7 @@ const getTrends = async (bot) =>{
 const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
     return new Promise((resolve, reject) =>{
         const { bot, trendsJson } = context;
-        let tweet =""; //(previous_id) ? `@covid_19bot\n` : ``;
+        let tweet = (previous_id) ? `@covid_19bot\n` : ``;
         const maxlen = 250;
         let datetimeTweet = new Date();
         let todayTweet = datetimeTweet.toLocaleString("pt-BR"); 
@@ -83,7 +83,7 @@ const Tweet =  (context, jsonFile, oldJson, previous_id) =>{
             }
         }
         //in_reply_to_status_id: previous_id
-        bot.post('statuses/update', { status: tweet}, (err, data, response) => {
+        bot.post('statuses/update', { status: tweet, in_reply_to_status_id: previous_id}, (err, data, response) => {
             if(!err){
                     const id =  data.id_str; 
                     console.log(`[${todayTweet}] Tweet success`);
@@ -107,10 +107,12 @@ const TweetThread =  async (statuses, context) => {
             previous_id =await Promise.resolve(previous_id_promise);
         }
         const  idPromisse = await Tweet(context, newJson, oldJson, previous_id);
+        await sleep(2000);
         const id = await Promise.resolve(idPromisse);
         if(id){
             status.tweeted = true;
         }
+
         return id || previous_id;
     }, null);
 };
@@ -276,5 +278,5 @@ const downloadFiles  = async () =>{
 
 const tokens = safeRequire();
 downloadFiles();
-setInterval(downloadFiles, 20*60*1000);
+setInterval(downloadFiles, 1*60*1000);
 

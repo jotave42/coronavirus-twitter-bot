@@ -273,13 +273,12 @@ const downloadFiles = async () => {
 
         const updatedStatus = await TweetThread(statuses, context);
         const statusesKeys = Object.keys(updatedStatus);
-        const processStatuses = statusesKeys.map(elemId => {
+        statusesKeys.forEach(elemId => {
             const element = statuses[elemId];
             if (element.tweeted) {
                 saveFile(element.newJson, element.fileName);
             }
         });
-        await Promise.all(processStatuses);
         log(`Bot Finished...`);
     });
 };

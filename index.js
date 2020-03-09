@@ -261,7 +261,7 @@ const downloadFiles = async () => {
 
     log(`Geting Trending Topics...`);
     //? Catch the rejection of getTrends so the program doesn't crash if it fails
-    const trendsJson = await getTrends(bot).catch(() => null);
+    const trendsJson = await getTrends(bot).catch((err) =>  log(`${err}`));
     const currentFolder = __dirname;
     const statuses = []; // here we gonna save the  tweets status
     await getCoronaNumbersSource1(currentFolder, statuses);

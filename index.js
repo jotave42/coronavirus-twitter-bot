@@ -92,9 +92,7 @@ const Tweet = (context, jsonFile, oldJson, previous_id) => {
                 }
             }
         }
-        console.log(tweet);
-        resolve(1);
-        return 0;
+
         bot.post('statuses/update', {
             status: tweet,
             in_reply_to_status_id: previous_id,

@@ -8,7 +8,7 @@ const sleep = require('util').promisify(setTimeout);
 
 const log = (msg, type = 'log') => {
     const timestamp =  new Date().toLocaleString("pt-BR");
-    const loggerFunction = console[type];
+    const loggerFunction = await console[type];
     loggerFunction(`[${timestamp}] ${msg}`);
 }
 

@@ -8,7 +8,7 @@ const sleep = require('util').promisify(setTimeout);
 
 const log = (msg, type = 'log') => {
     const timestamp =  new Date().toLocaleString("pt-BR");
-    const loggerFunction = await console[type];
+    const loggerFunction = console[type];
     loggerFunction(`[${timestamp}] ${msg}`);
 }
 
@@ -31,7 +31,7 @@ const getTrends = async (bot) => {
             id: '1'
         }, async (err, data, response) => {
             if (err) {
-                log(`ERROR CODE: ${err.code}, MSG: ${err.message}`);
+                log(`ERROR CODE: ${err.code}, MSG: ${err.message}`,`error`);
                 return reject(err.message);
             }
 
@@ -100,7 +100,7 @@ const Tweet = (context, jsonFile, oldJson, previous_id) => {
                 log(`Tweet success`);
                 resolve(id);
             } else {
-                log(`ERROR CODE: ${err.code}, MSG: ${err.message}`, 'err');
+                log(`ERROR CODE: ${err.code}, MSG: ${err.message}`, 'error');
                 resolve(null);
             }
         });
@@ -258,7 +258,7 @@ const getCoronaNumbersSource1 = async (currentFolder, statuses) => {
             informationUpdated(fileName, newJson, statuses);
         });
     }).catch((err) => {
-        log(`ERROR ${err}`, 'err');
+        log(`ERROR ${err}`, 'error');
     });
 };
 
@@ -274,10 +274,10 @@ const downloadFiles = async () => {
 
     log(`Geting Trending Topics...`);
     //? Catch the rejection of getTrends so the program doesn't crash if it fails
-    const trendsJson = await getTrends(bot).catch((err) =>  log(`${err}`));
+    const trendsJson = await getTrends(bot).catch((err) =>  log(`ERROR: ${err}`,`error`));
     const currentFolder = __dirname;
     const statuses = []; // here we gonna save the  tweets status
-    await getCoronaNumbersSource1(currentFolder, statuses).catch((err)=>{log(`ERROR: ${err}`);});
+    await getCoronaNumbersSource1(currentFolder, statuses).catch((err)=>{log(`ERROR: ${err}`,`error`);});
     getCoronaNumbersSource2(currentFolder, statuses).then(async () => {
         const context = {
             bot,
@@ -293,7 +293,7 @@ const downloadFiles = async () => {
         });
         log(`Bot Finished...`);
     }).catch((err)=>{
-        log(err);
+        log(err,`error`);
         log(`Bot Finished...`);
     });
 };

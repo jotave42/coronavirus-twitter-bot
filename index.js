@@ -79,12 +79,12 @@ const Tweet = (context, jsonFile, oldJson, previous_id) => {
                 `The data comes from: ${jsonFile.DataSource}\n` +
                 `#Coronavirus #COVID19 #bot\n`;
         }
-        let tweetLen = tweet.length;
+        let tweetLen = twitterText.parseTweet(tweet).weightedLength;
         if (trendsJson) {
             if (trendsJson.length > 0) {
                 for (const trend of trendsJson) {
                     const newTrendLen = trend.len + 1 // + 1  in order to add a space
-                    const newLen = tweet.Len + newTrendLen;
+                    const newLen = tweetLen + newTrendLen;
                     if (newLen < maxlen) {
                         tweet += trend.name + " ";
                         tweetLen = newLen;
@@ -92,7 +92,9 @@ const Tweet = (context, jsonFile, oldJson, previous_id) => {
                 }
             }
         }
-
+        console.log(tweet);
+        resolve(1);
+        return 0;
         bot.post('statuses/update', {
             status: tweet,
             in_reply_to_status_id: previous_id,

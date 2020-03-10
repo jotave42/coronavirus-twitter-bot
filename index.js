@@ -5,6 +5,7 @@ const Twit = require("twit");
 const pup = require("puppeteer");
 const cheerio = require("cheerio");
 const sleep = require('util').promisify(setTimeout);
+const twitterText = require('twitter-text')
 
 const log = (msg, type = 'log') => {
     const timestamp =  new Date().toLocaleString("pt-BR");
@@ -45,8 +46,9 @@ const getTrends = async (bot) => {
             const trendsList = trendsKeys.map(elemId => {
                 const element = trends[elemId];
                 const trend = {
+                    
                     name: element.name.trim(),
-                    len: element.name.length,
+                    len: twitterText.parseTweet(element.name).weightedLength,
                 }
                 return trend;
             });
@@ -59,7 +61,7 @@ const Tweet = (context, jsonFile, oldJson, previous_id) => {
     return new Promise((resolve, reject) => {
         const { bot, trendsJson } = context;
         let tweet = (previous_id) ? `@covid_19bot\n` : ``;
-        const maxlen = 250;
+        const maxlen = 280;
         if (!oldJson) {
             tweet += `Coronavirus Update \n` +
                 `Country_Region: ${jsonFile.Country_Region}\n` +
@@ -82,7 +84,7 @@ const Tweet = (context, jsonFile, oldJson, previous_id) => {
             if (trendsJson.length > 0) {
                 for (const trend of trendsJson) {
                     const newTrendLen = trend.len + 1 // + 1  in order to add a space
-                    const newLen = tweetLen + newTrendLen;
+                    const newLen = tweet.Len + newTrendLen;
                     if (newLen < maxlen) {
                         tweet += trend.name + " ";
                         tweetLen = newLen;

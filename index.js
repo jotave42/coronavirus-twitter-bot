@@ -114,6 +114,7 @@ const Tweet = (context, jsonFile, oldJson, previous_id, media_id) => {
                 }
             }
         }
+
         bot.post('statuses/update', {
             status: tweet,
             in_reply_to_status_id: previous_id,
@@ -141,13 +142,13 @@ const TweetThread = async (statuses, context) => {
         const { newJson, oldJson } = status;
         const {Country_Region} = newJson;
         const previous_id = await previous_id_promise;
-        const media_id = await uploadMedia(context, Country_Region);
+        const media_id = undefined; //= await uploadMedia(context, Country_Region);
         log(`Media id: ${media_id}`);
         log(`Waiting media upload`);
-        await sleep(7000);
+        await sleep(10000);
         const id = await Tweet(context, newJson, oldJson, previous_id,media_id);
         log(`Waiting tweet upload`);
-        await sleep(3000);
+        await sleep(10000);
         if (id) {
             status.tweeted = true;
             status.id = id;

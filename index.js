@@ -145,10 +145,10 @@ const TweetThread = async (statuses, context) => {
         const media_id = await uploadMedia(context, Country_Region);
         log(`Media id: ${media_id}`);
         log(`Waiting media upload`);
-        await sleep(10000);
+        await sleep(35000);
         const id = await Tweet(context, newJson, oldJson, previous_id,media_id);
         log(`Waiting tweet upload`);
-        await sleep(10000);
+        await sleep(35000);
         if (id) {
             status.tweeted = true;
             status.id = id;

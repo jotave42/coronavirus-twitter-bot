@@ -142,7 +142,7 @@ const TweetThread = async (statuses, context) => {
         const { newJson, oldJson } = status;
         const {Country_Region} = newJson;
         const previous_id = await previous_id_promise;
-        const media_id = undefined; //= await uploadMedia(context, Country_Region);
+        const media_id = await uploadMedia(context, Country_Region);
         log(`Media id: ${media_id}`);
         log(`Waiting media upload`);
         await sleep(10000);

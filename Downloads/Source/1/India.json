@@ -1,7 +1,7 @@
 {
 	"Country_Region": "India",
-	"Confirmed": 56,
-	"Deaths": 0,
+	"Confirmed": 60,
+	"Deaths": 1,
 	"Recovered": 4,
 	"DataSource": "tinyurl.com/uwns6z5"
 }

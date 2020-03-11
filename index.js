@@ -5,7 +5,8 @@ const Twit = require("twit");
 const pup = require("puppeteer");
 const cheerio = require("cheerio");
 const sleep = require('util').promisify(setTimeout);
-const twitterText = require('twitter-text')
+const twitterText = require('twitter-text');
+const createFlagsJson = require("./createFlagsJson.js")
 
 const log = (msg, type = 'log') => {
     const timestamp =  new Date().toLocaleString("pt-BR");
@@ -57,7 +58,28 @@ const getTrends = async (bot) => {
     });
 };
 
-const Tweet = (context, jsonFile, oldJson, previous_id) => {
+const uploadMedia = (context,Country_Region) => {
+    return new Promise((resolve, reject) => {
+        const {bot} = context;
+        const fileName = path.join(__dirname,"flags.json");
+        const rawdata = fs.readFileSync(fileName);
+        const josnFlags = JSON.parse(rawdata);
+        const meidaPath = josnFlags[Country_Region] || josnFlags["Others"];
+        log(`meidaPath => ${meidaPath}`);
+        const b64content = fs.readFileSync(meidaPath, { encoding: 'base64' });
+        bot.post('media/upload', { media_data: b64content }, (err, data, response)=>{
+            if (!err) {
+                resolve(data.media_id_string);
+            } else {
+                log(`ERROR CODE: ${err.code}, MSG: ${err.message}`, 'error');
+                resolve(undefined);
+            }
+        });
+       
+    });
+}
+
+const Tweet = (context, jsonFile, oldJson, previous_id, media_id) => {
     return new Promise((resolve, reject) => {
         const { bot, trendsJson } = context;
         let tweet = (previous_id) ? `@covid_19bot\n` : ``;
@@ -92,10 +114,10 @@ const Tweet = (context, jsonFile, oldJson, previous_id) => {
                 }
             }
         }
-
         bot.post('statuses/update', {
             status: tweet,
             in_reply_to_status_id: previous_id,
+            media_ids: media_id,
         }, (err, data, response) => {
             if (!err) {
                 const id = data.id_str;
@@ -103,7 +125,7 @@ const Tweet = (context, jsonFile, oldJson, previous_id) => {
                 resolve(id);
             } else {
                 log(`ERROR CODE: ${err.code}, MSG: ${err.message}`, 'error');
-                resolve(null);
+                resolve(undefined);
             }
         });
     });
@@ -117,9 +139,14 @@ const TweetThread = async (statuses, context) => {
         // so we can chain them in a thread, if there's more than one.
 
         const { newJson, oldJson } = status;
+        const {Country_Region} = newJson;
         const previous_id = await previous_id_promise;
-        const id = await Tweet(context, newJson, oldJson, previous_id);
-        log(`Sleep`);
+        const media_id = await uploadMedia(context, Country_Region);
+        log(`Media id: ${media_id}`);
+        log(`Waiting media upload`);
+        await sleep(7000);
+        const id = await Tweet(context, newJson, oldJson, previous_id,media_id);
+        log(`Waiting tweet upload`);
         await sleep(3000);
         if (id) {
             status.tweeted = true;
@@ -293,6 +320,8 @@ const downloadFiles = async () => {
                 saveFile(element.newJson, element.fileName);
             }
         });
+        log(`UPDATING Flags Json`);
+        createFlagsJson();
         log(`Bot Finished...`);
     }).catch((err)=>{
         log(err,`error`);

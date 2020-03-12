@@ -44,7 +44,13 @@ const specialCases = (flagsJson) =>{
     flagsJson["Republic of Moldova"] = path.join(flagsFolder,"Moldova.png");
     flagsJson["Russian Federation"] =  flagsJson["Russia"];
     flagsJson["Viet Nam"] =  flagsJson["Vietnam"];
+    flagsJson["United Kingdom"] =  flagsJson["UK"];
+    flagsJson["Reunion"] =  flagsJson["France"];
+    flagsJson["Cote d'Ivoire"] =  path.join(flagsFolder,"Cote-d-Ivoire.png");
     flagsJson["DRC"] = path.join(flagsFolder,"Democratic-Republic-of-the-Congo.png");
+    flagsJson["Congo (Kinshasa)"] =  flagsJson["DRC"];
+    flagsJson["Korea, South"] =  flagsJson["South Korea"];
+    flagsJson["Ivory Coast"] =  flagsJson["Cote d'Ivoire"];
     return flagsJson;
 };
 const creatFlagJson = () =>{

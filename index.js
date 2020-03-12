@@ -122,10 +122,6 @@ const Tweet = (context, jsonFile, oldJson, previous_id, media_id) => {
         }, (err, data, response) => {
             if (!err) {
                 const id = data.id_str;
-                console.log("data:",data);
-                console.log("fim data");
-                console.log("response",response);
-                console.log("fim response");
                 log(`Tweet success`);
                 resolve(id);
             } else {

@@ -117,11 +117,15 @@ const Tweet = (context, jsonFile, oldJson, previous_id, media_id) => {
 
         bot.post('statuses/update', {
             status: tweet,
-            in_reply_to_status_id: previous_id,
+            in_reply_to_status_id_str: previous_id,
             media_ids: media_id,
         }, (err, data, response) => {
             if (!err) {
                 const id = data.id_str;
+                console.log("data:",data);
+                console.log("fim data");
+                console.log("response",response);
+                console.log("fim response");
                 log(`Tweet success`);
                 resolve(id);
             } else {
@@ -142,11 +146,11 @@ const TweetThread = async (statuses, context) => {
         const { newJson, oldJson } = status;
         const {Country_Region} = newJson;
         const previous_id = await previous_id_promise;
-        const media_id =  await uploadMedia(context, Country_Region);
+        const media_id = await uploadMedia(context, Country_Region);
         log(`Media id: ${media_id}`);
         log(`Waiting media upload`);
         await sleep(30000);
-        const id =  await Tweet(context, newJson, oldJson, previous_id,media_id);
+        const id = await Tweet(context, newJson, oldJson, previous_id,media_id);
         log(`Waiting tweet upload`);
         await sleep(60000);
         if (id) {
@@ -271,12 +275,13 @@ const getCoronaNumbersSource1 = async (currentFolder, statuses) => {
         const data = await res.json();
         data.features.forEach((element) => {
             const node = element.attributes;
-            const {
+            let {
                 Country_Region,
                 Confirmed,
                 Deaths,
                 Recovered
             } = node;
+            Country_Region = Country_Region.replace("*","");
             const fileName = path.join(fileFolder, Country_Region + ".json")
             const newJson = {
                 Country_Region,

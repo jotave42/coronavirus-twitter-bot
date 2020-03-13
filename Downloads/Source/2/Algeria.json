@@ -1,7 +1,7 @@
 {
 	"Country_Region": "Algeria",
-	"Confirmed": 20,
-	"Deaths": 0,
-	"Recovered": 0,
+	"Confirmed": 26,
+	"Deaths": 2,
+	"Recovered": 10,
 	"DataSource": "tinyurl.com/s4gvvck"
 }

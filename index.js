@@ -79,7 +79,7 @@ const uploadMedia = (context,Country_Region) => {
     });
 }
 
-const Tweet = (context, jsonFile, oldJson, previous_id, media_id) => {
+const Tweet = (context, jsonFile, oldJson, previous_id, previous_id_str, media_id) => {
     return new Promise((resolve, reject) => {
         const { bot, trendsJson } = context;
         let tweet = (previous_id) ? `@covid_19bot\n` : ``;
@@ -117,13 +117,15 @@ const Tweet = (context, jsonFile, oldJson, previous_id, media_id) => {
 
         bot.post('statuses/update', {
             status: tweet,
-            in_reply_to_status_id_str: previous_id,
+            in_reply_to_status_id_str: previous_id_str,
+            in_reply_to_status_id: previous_id,
             media_ids: media_id,
         }, (err, data, response) => {
             if (!err) {
-                const id = data.id_str;
+                const id = data.id;
+                const id_str = data.id_str;
                 log(`Tweet success`);
-                resolve(id);
+                resolve({id,id_str});
             } else {
                 log(`ERROR CODE: ${err.code}, MSG: ${err.message}`, 'error');
                 resolve(undefined);
@@ -141,20 +143,31 @@ const TweetThread = async (statuses, context) => {
 
         const { newJson, oldJson } = status;
         const {Country_Region} = newJson;
-        const previous_id = await previous_id_promise;
+        const previous_id_promise_obj = await previous_id_promise;
+        let previous_id;
+        let previous_id_str;
+
+        if(previous_id_promise_obj){
+            previous_id = previous_id_promise_obj.id;
+            previous_id_str = previous_id_promise_obj.id_str;
+        }
         const media_id = await uploadMedia(context, Country_Region);
-        log(`Media id: ${media_id}`);
         log(`Waiting media upload`);
         await sleep(30000);
-        const id = await Tweet(context, newJson, oldJson, previous_id,media_id);
+        let {id, id_str} = await Tweet(context, newJson, oldJson, previous_id, previous_id_str,media_id);
+        log(`ids=>{${id},${id_str}}`);
         log(`Waiting tweet upload`);
-        await sleep(60000);
+        await sleep(30000);
         if (id) {
             status.tweeted = true;
             status.id = id;
+            saveFile(status.newJson, status.fileName);
+        } else {
+            id = previous_id;
+            id_str = previous_id_str;
         }
         updatedStatus.push(status);
-        return id || previous_id;
+        return  {id, id_str};
     }, null);
     return updatedStatus;
 };
@@ -264,7 +277,7 @@ const getCoronaNumbersSource2 = async (currentFolder, statuses) => {
 
 const getCoronaNumbersSource1 = async (currentFolder, statuses) => {
     log(`Starting Download From Source 1..`);
-    const urlRequest =  `https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases/FeatureServer/2/query?f=json&where=Confirmed%20%3E%200&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Confirmed%20desc&resultOffset=0&resultRecordCount=200&cacheHint=true`;
+    const urlRequest =  `https://services9.arcgis.com/N9p5hsImWXAccRNI/arcgis/rest/services/Z7biAeD8PAkqgmWhxG2A/FeatureServer/2/query?f=json&where=Confirmed%20%3E%200&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Confirmed%20desc&resultOffset=0&resultRecord`;
     const fileFolder = path.join(currentFolder, "Downloads", "Source", "1");
     checkAndCreateFolder(fileFolder);
     return fetch(urlRequest).then(async (res) => {
@@ -315,20 +328,14 @@ const downloadFiles = async () => {
             trendsJson,
         }
         const updatedStatus = await TweetThread(statuses, context);
-        const statusesKeys = Object.keys(updatedStatus);
-        statusesKeys.forEach(elemId => {
-            const element = statuses[elemId];
-            if (element.tweeted) {
-                saveFile(element.newJson, element.fileName);
-            }
-        });
         log(`UPDATING Flags Json`);
         createFlagsJson();
         log(`Bot Finished...`);
-    }).catch((err)=>{
+    });/*.catch((err)=>{
+        
         log(err,`error`);
         log(`Bot Finished...`);
-    });
+    });*/
 };
 
 const tokens = safeRequire();

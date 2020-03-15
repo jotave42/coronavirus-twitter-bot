@@ -1,7 +1,7 @@
 {
 	"Country_Region": "Hungary",
-	"Confirmed": 19,
-	"Deaths": 0,
-	"Recovered": 0,
+	"Confirmed": 32,
+	"Deaths": 1,
+	"Recovered": 1,
 	"DataSource": "tinyurl.com/s4gvvck"
 }

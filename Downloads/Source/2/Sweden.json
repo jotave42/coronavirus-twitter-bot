@@ -1,7 +1,7 @@
 {
 	"Country_Region": "Sweden",
-	"Confirmed": 751,
-	"Deaths": 1,
+	"Confirmed": 1024,
+	"Deaths": 3,
 	"Recovered": 1,
 	"DataSource": "tinyurl.com/s4gvvck"
 }

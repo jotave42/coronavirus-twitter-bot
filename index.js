@@ -102,7 +102,7 @@ const Tweet = (context, jsonFile, oldJson, previous_id, previous_id_str, media_i
                 `#Coronavirus #COVID19 #bot\n`;
         }
         let tweetLen = twitterText.parseTweet(tweet).weightedLength;
-        if (trendsJson) {
+        /*if (trendsJson) {
             if (trendsJson.length > 0) {
                 for (const trend of trendsJson) {
                     const newTrendLen = trend.len + 1 // + 1  in order to add a space
@@ -113,7 +113,7 @@ const Tweet = (context, jsonFile, oldJson, previous_id, previous_id_str, media_i
                     }
                 }
             }
-        }
+        }*/
 
         bot.post('statuses/update', {
             status: tweet,
@@ -151,10 +151,10 @@ const TweetThread = async (statuses, context) => {
             previous_id = previous_id_promise_obj.id;
             previous_id_str = previous_id_promise_obj.id_str;
         }
-        const media_id = await uploadMedia(context, Country_Region);
+        const media_id =await uploadMedia(context, Country_Region);
         log(`Waiting media upload`);
         await sleep(30000);
-        let {id, id_str} = await Tweet(context, newJson, oldJson, previous_id, previous_id_str,media_id);
+        let {id, id_str} =await Tweet(context, newJson, oldJson, previous_id, previous_id_str,media_id);
         log(`ids=>{${id},${id_str}}`);
         log(`Waiting tweet upload`);
         await sleep(30000);

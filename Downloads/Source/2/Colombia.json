@@ -1,7 +1,7 @@
 {
 	"Country_Region": "Colombia",
-	"Confirmed": 34,
+	"Confirmed": 54,
 	"Deaths": 0,
-	"Recovered": 0,
+	"Recovered": 1,
 	"DataSource": "tinyurl.com/s4gvvck"
 }

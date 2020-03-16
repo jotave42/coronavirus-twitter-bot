@@ -1,7 +1,7 @@
 {
 	"Country_Region": "Czechia",
-	"Confirmed": 253,
+	"Confirmed": 344,
 	"Deaths": 0,
-	"Recovered": 0,
+	"Recovered": 3,
 	"DataSource": "tinyurl.com/s4gvvck"
 }

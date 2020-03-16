@@ -6,7 +6,8 @@ const pup = require("puppeteer");
 const cheerio = require("cheerio");
 const sleep = require('util').promisify(setTimeout);
 const twitterText = require('twitter-text');
-const createFlagsJson = require("./createFlagsJson.js")
+const createFlagsJson = require("./createFlagsJson.js");
+const creatCountriesJson = require("./creatCountriesJson");
 
 const log = (msg, type = 'log') => {
     const timestamp =  new Date().toLocaleString("pt-BR");
@@ -77,12 +78,12 @@ const uploadMedia = (context,Country_Region) => {
         });
        
     });
-}
+};
 
 const Tweet = (context, jsonFile, oldJson, previous_id, previous_id_str, media_id) => {
     return new Promise((resolve, reject) => {
         const { bot, trendsJson } = context;
-        let tweet = (previous_id) ? `@covid_19bot\n` : ``;
+        let tweet =''; //(previous_id) ? `@covid_19bot\n` : ``;
         const maxlen = 280;
         if (!oldJson) {
             tweet += `Coronavirus Update \n` +
@@ -101,19 +102,6 @@ const Tweet = (context, jsonFile, oldJson, previous_id, previous_id_str, media_i
                 `The data comes from: ${jsonFile.DataSource}\n` +
                 `#Coronavirus #COVID19 #bot\n`;
         }
-        let tweetLen = twitterText.parseTweet(tweet).weightedLength;
-        /*if (trendsJson) {
-            if (trendsJson.length > 0) {
-                for (const trend of trendsJson) {
-                    const newTrendLen = trend.len + 1 // + 1  in order to add a space
-                    const newLen = tweetLen + newTrendLen;
-                    if (newLen < maxlen) {
-                        tweet += trend.name + " ";
-                        tweetLen = newLen;
-                    }
-                }
-            }
-        }*/
 
         bot.post('statuses/update', {
             status: tweet,
@@ -330,14 +318,145 @@ const downloadFiles = async () => {
         const updatedStatus = await TweetThread(statuses, context);
         log(`UPDATING Flags Json`);
         createFlagsJson();
+        creatCountriesJson();
         log(`Bot Finished...`);
-    });/*.catch((err)=>{
+    }).catch((err)=>{
         
         log(err,`error`);
         log(`Bot Finished...`);
-    });*/
+    });
 };
+const getMentions = async (bot,lastReplayId)=>{
+    log("getting Mentions");
+    return new Promise((resolve, reject) => {
+        const tweets = [];
+        const option = lastReplayId ? { Name: "Example",since_id:lastReplayId} : { Name: "Example"};
+        bot.get('statuses/mentions_timeline',option, 
+        (err, data, response) =>{
+            if (err) {
+                log(`ERROR CODE: ${err.code}, MSG: ${err.message}`,`error`);
+                return reject(err.message);
+            }
+            data.forEach((elem)=>{
+                if(elem.user.id_str !=  '1235367745539248128'){
 
+                    const twitterText =elem.text.toLowerCase().split(" ");
+                    twitterText.shift();
+                    const countryArray = twitterText.filter((elem)=>{
+                        if(elem !== ""){
+                            return elem;
+                        }
+                    });
+                
+                    const country = countryArray.join(" "); 
+                    const tweet_id_str = elem.id_str;
+                    const user_name = "@"+elem.user.screen_name;
+                    tweets.push({
+                        country,
+                        tweet_id_str,
+                        user_name
+                    });
+                }
+
+            });
+            resolve(tweets);
+        });
+    });
+};
+const creatTweets = (mentions) => {
+    const fileName = path.join(__dirname,"countries.json");
+    let rawdata = fs.readFileSync(fileName);
+    const josnCountries = JSON.parse(rawdata);
+    const tweets = [];
+    const maxlen = 280;
+
+    mentions.forEach((mention)=>{
+        let tweet = mention.user_name+" ";
+        let tweet_len = 0;
+        const {tweet_id_str , country,user_name} =mention
+        log(`[${country}]`);
+        if(josnCountries[country]){
+            josnCountries[country].forEach((countyJsonPath)=>{
+                    rawdata = fs.readFileSync(countyJsonPath);
+                    const josnCountry = JSON.parse(rawdata);
+                    tweet_len = twitterText.parseTweet(tweet).weightedLength;
+                    const nextCounty =  `Country_Region: ${josnCountry.Country_Region}\n`+
+                                        `Confirmed: ${josnCountry.Confirmed}\n`+
+                                        `Deaths: ${josnCountry.Deaths}\n`+
+                                        `Recovered: ${josnCountry.Recovered}\n`+
+                                        `The data comes from: ${josnCountry.DataSource}\n`
+                    const totalTweetLength = twitterText.parseTweet(nextCounty).weightedLength + tweet_len;
+                    if (totalTweetLength <= maxlen) {
+                        tweet+= nextCounty;
+                    } else {
+                        tweets.push({tweet_id_str,tweet,user_name});
+                        tweet = mention.user_name + " " + nextCounty;
+                    }
+            });
+        } else {
+            tweet += `Sorry but I didn't find any data of ${country}.\n`+
+            `Please try again with another name for example:\n`+
+            `Instead of @covid_19bot Brasil try @covid_19bot Brazil`; 
+        }
+       tweets.push({tweet_id_str,tweet,user_name});
+    });
+    return tweets
+}
+const replayTweet = async (bot,tweet_obj)=>{
+    return new Promise((resolve, reject) => {
+        const {tweet,tweet_id_str,user_name} = tweet_obj;
+        bot.post('statuses/update', {
+            status: tweet,
+            in_reply_to_status_id: tweet_id_str,
+            auto_populate_reply_metadata: true
+        }, (err, data, response) => {
+            if (!err) {
+                log(`Tweet replayed to ${user_name} with success`);
+                const replayJsonFile = path.join(__dirname,"replay.json");
+                let josnReplay;
+                if(fs.existsSync(replayJsonFile)){
+                    const rawdata = fs.readFileSync(replayJsonFile);
+                    josnReplay = JSON.parse(rawdata);
+                    josnReplay.lastRepalyId = tweet_id_str;
+                } else {
+                    josnReplay = {lastRepalyId:tweet_id_str};
+                }
+
+                fs.outputJsonSync(replayJsonFile, josnReplay, { spaces: "\t" });
+
+                resolve(true);
+            } else {
+                log(`ERROR CODE: ${err.code}, MSG: ${err.message}`, 'error');
+                resolve(false);
+            }
+        });
+    });
+};
+const replayMentions = async()=>{
+    const bot = new Twit({
+        consumer_key: tokens.APIKey,
+        consumer_secret: tokens.APISecretKey,
+        access_token: tokens.AccessToken,
+        access_token_secret: tokens.AccessTokenSecret,
+        timeout_ms: 60 * 1000
+    });
+    let lastReplayId;
+    const replayJsonFile = path.join(__dirname,"replay.json");
+
+    if(fs.existsSync(replayJsonFile)){
+        const rawdata = fs.readFileSync(replayJsonFile);
+        const repalyJson =  JSON.parse(rawdata);
+        lastReplayId = repalyJson.lastRepalyId;
+    }
+
+    const mentions = await getMentions(bot,lastReplayId);
+    const tweets = creatTweets(mentions);
+    tweets.forEach(async (tweet)=>{
+        await replayTweet(bot,tweet);
+    });
+}
 const tokens = safeRequire();
 downloadFiles();
+replayMentions();
 setInterval(downloadFiles, 20 * 60 * 1000);
+setInterval(replayMentions, 30 * 1000);

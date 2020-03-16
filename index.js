@@ -451,6 +451,7 @@ const replayMentions = async()=>{
     const mentions = await getMentions(bot,lastReplayId);
     const tweets = creatTweets(mentions);
     tweets.forEach(async (tweet)=>{
+        await sleep(1500);
         await replayTweet(bot,tweet);
     });
 }

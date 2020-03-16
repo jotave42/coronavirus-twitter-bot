@@ -102,11 +102,8 @@ const Tweet = (context, jsonFile, oldJson, previous_id, previous_id_str, media_i
                 `The data comes from: ${jsonFile.DataSource}\n` +
                 `#Coronavirus #COVID19 #bot\n`;
         }
-
         bot.post('statuses/update', {
             status: tweet,
-            in_reply_to_status_id_str: previous_id_str,
-            in_reply_to_status_id: previous_id,
             media_ids: media_id,
         }, (err, data, response) => {
             if (!err) {
@@ -373,8 +370,7 @@ const creatTweets = (mentions) => {
     mentions.forEach((mention)=>{
         let tweet = mention.user_name+" ";
         let tweet_len = 0;
-        const {tweet_id_str , country,user_name} =mention
-        log(`[${country}]`);
+        const {tweet_id_str , country,user_name} =mention;
         if(josnCountries[country]){
             josnCountries[country].forEach((countyJsonPath)=>{
                     rawdata = fs.readFileSync(countyJsonPath);

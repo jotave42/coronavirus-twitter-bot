@@ -455,6 +455,8 @@ const replayMentions = async()=>{
     });
 }
 const tokens = safeRequire();
+creatCountriesJson();
+createFlagsJson();
 downloadFiles();
 replayMentions();
 setInterval(downloadFiles, 20 * 60 * 1000);

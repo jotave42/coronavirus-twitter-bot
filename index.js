@@ -408,7 +408,6 @@ const replayTweet = async (bot,tweet_obj)=>{
         bot.post('statuses/update', {
             status: tweet,
             in_reply_to_status_id: tweet_id_str,
-            auto_populate_reply_metadata: true
         }, (err, data, response) => {
             if (!err) {
                 log(`Tweet replayed to ${user_name} with success`);

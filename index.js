@@ -102,6 +102,7 @@ const Tweet = (context, jsonFile, oldJson, previous_id, previous_id_str, media_i
                 `The data comes from: ${jsonFile.DataSource}\n` +
                 `#Coronavirus #COVID19 #bot\n`;
         }
+        
         bot.post('statuses/update', {
             status: tweet,
             media_ids: media_id,
@@ -324,7 +325,6 @@ const downloadFiles = async () => {
     });
 };
 const getMentions = async (bot,lastReplayId)=>{
-    log("getting Mentions");
     return new Promise((resolve, reject) => {
         const tweets = [];
         const option = lastReplayId ? { Name: "Example",since_id:lastReplayId} : { Name: "Example"};

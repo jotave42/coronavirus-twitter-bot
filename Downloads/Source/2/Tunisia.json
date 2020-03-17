@@ -1,7 +1,7 @@
 {
 	"Country_Region": "Tunisia",
-	"Confirmed": 20,
+	"Confirmed": 24,
 	"Deaths": 0,
-	"Recovered": 0,
+	"Recovered": 1,
 	"DataSource": "tinyurl.com/s4gvvck"
 }

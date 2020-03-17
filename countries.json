@@ -41,6 +41,7 @@
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Azerbaijan.json"
 	],
 	"bahamas": [
+		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Bahamas.json",
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Bahamas.json"
 	],
 	"bahrain": [
@@ -51,7 +52,9 @@
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Bangladesh.json",
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Bangladesh.json"
 	],
-	"barbados": [],
+	"barbados": [
+		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Barbados.json"
+	],
 	"belarus": [
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Belarus.json",
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Belarus.json"
@@ -62,6 +65,7 @@
 	],
 	"belize": [],
 	"benin": [
+		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Benin.json",
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Benin.json"
 	],
 	"bhutan": [
@@ -107,7 +111,9 @@
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Canada.json"
 	],
 	"cape verde": [],
-	"central african republic": [],
+	"central african republic": [
+		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Central African Republic.json"
+	],
 	"chad": [],
 	"chile": [
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Chile.json",
@@ -312,7 +318,9 @@
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Kenya.json"
 	],
 	"kiribati": [],
-	"kosovo": [],
+	"kosovo": [
+		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Kosovo.json"
+	],
 	"kuwait": [
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Kuwait.json",
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Kuwait.json"
@@ -329,6 +337,7 @@
 	],
 	"lesotho": [],
 	"liberia": [
+		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Liberia.json",
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Liberia.json"
 	],
 	"libya": [],
@@ -541,6 +550,7 @@
 	],
 	"solomon islands": [],
 	"somalia": [
+		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Somalia.json",
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Somalia.json"
 	],
 	"south africa": [
@@ -578,13 +588,16 @@
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Switzerland.json",
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Switzerland.json"
 	],
-	"syria": [],
+	"syria": [
+		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Syria.json"
+	],
 	"taiwan": [
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Taiwan.json",
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Taiwan.json"
 	],
 	"tajikistan": [],
 	"tanzania": [
+		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Tanzania.json",
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Tanzania.json"
 	],
 	"thailand": [
@@ -633,6 +646,7 @@
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\US.json"
 	],
 	"uzbekistan": [
+		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\1\\Uzbekistan.json",
 		"C:\\Users\\joaom\\Documents\\uff\\corona\\Downloads\\Source\\2\\Uzbekistan.json"
 	],
 	"vatican city": [

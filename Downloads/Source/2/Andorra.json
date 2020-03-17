@@ -1,7 +1,7 @@
 {
 	"Country_Region": "Andorra",
-	"Confirmed": 14,
+	"Confirmed": 16,
 	"Deaths": 0,
-	"Recovered": 0,
+	"Recovered": 1,
 	"DataSource": "tinyurl.com/s4gvvck"
 }

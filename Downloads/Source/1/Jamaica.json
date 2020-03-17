@@ -1,7 +1,7 @@
 {
 	"Country_Region": "Jamaica",
-	"Confirmed": 8,
+	"Confirmed": 15,
 	"Deaths": 0,
-	"Recovered": 0,
-	"DataSource": "tinyurl.com/uwns6z5"
+	"Recovered": 2,
+	"DataSource": "bing.com/covid"
 }

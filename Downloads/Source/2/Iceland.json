@@ -1,7 +1,7 @@
 {
 	"Country_Region": "Iceland",
-	"Confirmed": 199,
-	"Deaths": 0,
-	"Recovered": 0,
+	"Confirmed": 220,
+	"Deaths": 1,
+	"Recovered": 5,
 	"DataSource": "tinyurl.com/s4gvvck"
 }

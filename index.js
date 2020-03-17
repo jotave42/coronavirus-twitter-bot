@@ -102,7 +102,7 @@ const Tweet = (context, jsonFile, oldJson, previous_id, previous_id_str, media_i
                 `The data comes from: ${jsonFile.DataSource}\n` +
                 `#Coronavirus #COVID19 #bot\n`;
         }
-        
+
         bot.post('statuses/update', {
             status: tweet,
             media_ids: media_id,
@@ -141,7 +141,7 @@ const TweetThread = async (statuses, context) => {
         log(`Waiting media upload`);
         await sleep(30000);
         let {id, id_str} =await Tweet(context, newJson, oldJson, previous_id, previous_id_str,media_id);
-        log(`ids=>{${id},${id_str}}`);
+        log(`id=${id} => id=${id_str}`);
         log(`Waiting tweet upload`);
         await sleep(30000);
         if (id) {
@@ -263,27 +263,41 @@ const getCoronaNumbersSource2 = async (currentFolder, statuses) => {
 
 const getCoronaNumbersSource1 = async (currentFolder, statuses) => {
     log(`Starting Download From Source 1..`);
-    const urlRequest =  `https://services9.arcgis.com/N9p5hsImWXAccRNI/arcgis/rest/services/Z7biAeD8PAkqgmWhxG2A/FeatureServer/2/query?f=json&where=Confirmed%20%3E%200&returnGeometry=false&spatialRel=esriSpatialRelIntersects&outFields=*&orderByFields=Confirmed%20desc&resultOffset=0&resultRecord`;
+    const urlRequest =  `https://www.bing.com/covid/data?IG=AA7EC41C48894464AE16A0E0D30F0B64`;
     const fileFolder = path.join(currentFolder, "Downloads", "Source", "1");
     checkAndCreateFolder(fileFolder);
     return fetch(urlRequest).then(async (res) => {
         const data = await res.json();
-        data.features.forEach((element) => {
-            const node = element.attributes;
+        const Country_Region_Total ="Total";
+        const Confirmed_Total = data.totalConfirmed;
+        const Deaths_Total = data.totalDeaths;
+        const Recovered_Total = data.totalRecovered;
+        const jsonTotal ={
+            Country_Region: Country_Region_Total,
+            Confirmed: Confirmed_Total,
+            Deaths: Deaths_Total,
+            Recovered: Recovered_Total,
+            DataSource: "bing.com/covid"
+        };
+        const fileNameTotal = path.join(fileFolder, Country_Region_Total + ".json")
+        informationUpdated(fileNameTotal, jsonTotal, statuses);
+            
+        data.areas.forEach((element) => {
+            const node = element;
             let {
-                Country_Region,
-                Confirmed,
-                Deaths,
-                Recovered
+                country,
+                totalConfirmed,
+                totalDeaths,
+                totalRecovered
             } = node;
-            Country_Region = Country_Region.replace("*","");
-            const fileName = path.join(fileFolder, Country_Region + ".json")
+            country = country.replace("*","");
+            const fileName = path.join(fileFolder, country + ".json")
             const newJson = {
-                Country_Region,
-                Confirmed,
-                Deaths,
-                Recovered,
-                DataSource: "tinyurl.com/uwns6z5"
+                Country_Region:country,
+                Confirmed:totalConfirmed,
+                Deaths:totalDeaths,
+                Recovered:totalRecovered,
+                DataSource: "bing.com/covid"
             };
             informationUpdated(fileName, newJson, statuses);
         });

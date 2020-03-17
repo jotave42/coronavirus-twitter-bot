@@ -1,7 +1,7 @@
 {
 	"Country_Region": "Georgia",
-	"Confirmed": 30,
+	"Confirmed": 33,
 	"Deaths": 0,
-	"Recovered": 0,
-	"DataSource": "tinyurl.com/uwns6z5"
+	"Recovered": 1,
+	"DataSource": "bing.com/covid"
 }

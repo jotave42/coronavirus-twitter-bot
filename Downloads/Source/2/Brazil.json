@@ -1,7 +1,7 @@
 {
 	"Country_Region": "Brazil",
-	"Confirmed": 234,
-	"Deaths": 0,
+	"Confirmed": 301,
+	"Deaths": 1,
 	"Recovered": 2,
 	"DataSource": "tinyurl.com/s4gvvck"
 }

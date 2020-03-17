@@ -73,5 +73,5 @@ const creatFlagJson = () =>{
     log(`File ${jsonLocation} saved.`);
     log(`Flags Json updated.`);
 };
-creatFlagJson();
+
 module.exports = creatFlagJson;

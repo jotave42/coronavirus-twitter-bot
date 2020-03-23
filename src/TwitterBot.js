@@ -82,7 +82,7 @@ class TwitterBot {
     Tweet(jsonFile, oldJson, previous_id, previous_id_str, media_id){
         return new Promise((resolve, reject) => {
 
-            let tweet = (previous_id) ? `@covid_19bot\n` : ``;
+            let tweet =``; // (previous_id) ? `@covid_19bot\n` : ``;
             if (!oldJson) {
 
                 tweet += `Coronavirus Update \n` +
@@ -141,7 +141,7 @@ class TwitterBot {
             await sleep(30000);
             let {id, id_str} = await this.Tweet(newJson, oldJson, previous_id, previous_id_str,media_id);
             Utils.log(`Waiting tweet upload`);
-            await sleep(30000);
+            await sleep(60000);
             if (id) {
                 status.tweeted = true;
                 status.id = id;

@@ -46,7 +46,7 @@ const updateLastReplay = async()=>{
 
     const lastRepalyJson = {lastRepalyId:lastTweetId};
     const replayJsonFile = path.join(__dirname,"replay.json");
-    Utils.saveFile(lastRepalyJson,replayJsonFile);
+    Utils.saveFile(lastRepalyJson, replayJsonFile, true);
 }
 
 const updateFiles = async ()=>{

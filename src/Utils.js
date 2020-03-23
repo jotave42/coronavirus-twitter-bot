@@ -7,11 +7,13 @@ class Utils {
         loggerFunction(`[${timestamp}] ${msg}`);
     }
 
-    static saveFile(jsonFile, fileName){
+    static saveFile(jsonFile, fileName, noLog){
         fs.outputJsonSync(fileName, jsonFile, {
             spaces: "\t"
         })
-        this.log(`File ${fileName} saved.`);
+        if(!noLog){
+            this.log(`File ${fileName} saved.`);
+        }
     }
 
     static checkAndCreateFolder(fileFolder){

@@ -135,7 +135,7 @@ class TwitterBot {
                 previous_id = previous_id_promise_obj.id;
                 previous_id_str = previous_id_promise_obj.id_str;
             }
-            const media_id = await uploadMedia(Country_Region);
+            const media_id = await this.uploadMedia(Country_Region);
             Utils.log(`Waiting media upload`);
             await sleep(30000);
             let {id, id_str} = await this.Tweet(newJson, oldJson, previous_id, previous_id_str,media_id);

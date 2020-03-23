@@ -40,6 +40,14 @@ const UpadateData = async (force) => {
     statuses = joinStatuses(statuses, statuses2);
     return statuses
 }
+const updateLastReplay = async()=>{
+    const twitterBot = new TwitterBot(tokens);
+    const lastTweetId = await twitterBot.getLastTweet(`1235367745539248128`);
+
+    const lastRepalyJson = {lastRepalyId:lastTweetId};
+    const replayJsonFile = path.join(__dirname,"replay.json");
+    Utils.saveFile(lastRepalyJson,replayJsonFile);
+}
 
 const updateFiles = async ()=>{
     Utils.log(`Upadating Files...`);
@@ -47,12 +55,7 @@ const updateFiles = async ()=>{
     statuses.forEach((status)=>{
         Utils.saveFile(status.newJson, status.fileName);
     });
-    const twitterBot = new TwitterBot(tokens);
-    const lastTweetId = await twitterBot.getLastTweet(`1235367745539248128`);
-
-    const lastRepalyJson = {lastRepalyId:lastTweetId};
-    const replayJsonFile = path.join(__dirname,"replay.json");
-    Utils.saveFile(lastRepalyJson,replayJsonFile);
+    await updateLastReplay();
     Utils.log(`Upadating Files Done`);
 }
 
@@ -94,10 +97,14 @@ const replayMentions = async () => {
         const twitterBot = new TwitterBot(tokens, __dirname);
         const mentions = await twitterBot.getMentions(lastReplayId);
         const tweets = twitterBot.creatTweets(mentions);
-        tweets.forEach(async (tweet)=>{
-            await sleep(1500);
-            await twitterBot.replayTweet(tweet);
-        });
+        if(tweets.length>0){
+            tweets.forEach(async (tweet)=>{
+                await sleep(1500);
+                await twitterBot.replayTweet(tweet);
+            });
+        } else {
+            await updateLastReplay();
+        }
     }catch(err){
         Utils.log(`ERROR: ${err}`,`error`);
     }

@@ -6,7 +6,8 @@ const { parseTweet } = require('twitter-text');
 const path = require("path");
 
 class TwitterBot {
-    constructor(tokens) {
+    constructor(tokens,projectFolder) {
+        this.rootFolder = projectFolder;
         this.bot = new Twit({
             consumer_key: tokens.APIKey,
             consumer_secret: tokens.APISecretKey,
@@ -16,16 +17,16 @@ class TwitterBot {
         }); 
     }
 
-    uploadMedia(context,Country_Region){
+    uploadMedia(Country_Region){
         return new Promise((resolve, reject) => {
-            const {bot} = context;
-            const fileName = path.join(__dirname,"flags.json");
+            const fileName = path.join(this.rootFolder,"flags.json");
+
             const rawdata = fs.readFileSync(fileName);
-            const josnFlags = JSON.parse(rawdata);
+            const josnFlags = Utils.openJson(fileName);
             const meidaPath = josnFlags[Country_Region] || josnFlags["Others"];
             Utils.log(`meidaPath => ${meidaPath}`);
             const b64content = fs.readFileSync(meidaPath, { encoding: 'base64' });
-            bot.post('media/upload', { media_data: b64content }, (err, data, response)=>{
+            this.bot.post('media/upload', { media_data: b64content }, (err, data, response)=>{
                 if (!err) {
                     resolve(data.media_id_string);
                 } else {
@@ -135,7 +136,7 @@ class TwitterBot {
                 previous_id = previous_id_promise_obj.id;
                 previous_id_str = previous_id_promise_obj.id_str;
             }
-            const media_id = await this.uploadMedia(Country_Region);
+            const media_id = await this.uploadMedia(Country_Region).catch((err)=>{Utils.log(`ERROR: ${err}`,`error`);});
             Utils.log(`Waiting media upload`);
             await sleep(30000);
             let {id, id_str} = await this.Tweet(newJson, oldJson, previous_id, previous_id_str,media_id);
@@ -192,8 +193,8 @@ class TwitterBot {
         });
     }
     
-    creatTweets(mentions, localFolder){
-        const fileName = path.join(localFolder,"countries.json");
+    creatTweets(mentions){
+        const fileName = path.join(this.rootFolder,"countries.json");
         const josnCountries = Utils.openJson(fileName);
 
         const tweets = [];
@@ -235,7 +236,7 @@ class TwitterBot {
         return tweets;
     }
 
-    async replayTweet(tweet_obj,localFolder){
+    async replayTweet(tweet_obj){
         return new Promise((resolve, reject) => {
             const {tweet,tweet_id_str,user_name} = tweet_obj;
             this.bot.post('statuses/update', {
@@ -245,7 +246,7 @@ class TwitterBot {
 
                 if (!err) {
                     Utils.log(`Tweet replayed to ${user_name} with success`);
-                    const replayJsonFile = path.join(localFolder,"replay.json");
+                    const replayJsonFile = path.join(this.rootFolder,"replay.json");
                     const josnReplay = {lastRepalyId:tweet_id_str};
                     Utils.saveFile(josnReplay,replayJsonFile);
     

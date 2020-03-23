@@ -4,6 +4,7 @@ const Countries = require("./src/Countries.js");
 const GetData = require("./src/GetData.js");
 const Utils = require('./src/Utils.js');
 const TwitterBot = require('./src/TwitterBot.js');
+const sleep = require('util').promisify(setTimeout);
 const safeRequire = () => {
     try {
         return require("./tokens.json");
@@ -59,17 +60,20 @@ const updateFiles = async ()=>{
 const downloadFiles = async () => {
     try{
         Utils.log(`Staring downloadFiles...`);
-
+        
         const statuses = await UpadateData();
 
-        const twitterBot = new TwitterBot(tokens);
-        await twitterBot.TweetThread(statuses).catch((err)=>{Utils.log(`ERROR: ${err}`,`error`);});
-        
         const countries = new Countries(__dirname);
         const flags = new Flags(__dirname);
-        
+
         countries.creatCountriesJson();
         flags.creatFlagJson();
+
+        const twitterBot = new TwitterBot(tokens, __dirname);
+        await twitterBot.TweetThread(statuses).catch((err)=>{Utils.log(`ERROR: ${err}`,`error`);});
+        
+        
+        
         Utils.log(`downloadFiles Finished...`);
     }catch(err){
         Utils.log(`ERROR: ${err}`,`error`);
@@ -87,12 +91,12 @@ const replayMentions = async () => {
         if(repalyJson){
             lastReplayId = repalyJson.lastRepalyId;
         }
-        const twitterBot = new TwitterBot(tokens);
+        const twitterBot = new TwitterBot(tokens, __dirname);
         const mentions = await twitterBot.getMentions(lastReplayId);
-        const tweets = twitterBot.creatTweets(mentions, __dirname);
+        const tweets = twitterBot.creatTweets(mentions);
         tweets.forEach(async (tweet)=>{
             await sleep(1500);
-            await twitterBot.replayTweet(tweet,__dirname);
+            await twitterBot.replayTweet(tweet);
         });
     }catch(err){
         Utils.log(`ERROR: ${err}`,`error`);
@@ -102,7 +106,8 @@ const tokens = safeRequire();
 const main = async () => {
     Utils.log(`Staring Bot...`);
     await updateFiles().catch((err)=>{Utils.log(`ERROR: ${err}`,`error`)});
-    setInterval(downloadFiles, 1 * 60 * 1000);
+    downloadFiles();
+    setInterval(downloadFiles, 20 * 60 * 1000);
     setInterval(replayMentions, 30 * 1000);
 }
 main();

@@ -96,9 +96,9 @@ class GetData {
                 const fileName = path.join(fileFolder, displayName + ".json")
                 const newJson = {
                     Country_Region:displayName,
-                    Confirmed:totalConfirmed,
-                    Deaths:totalDeaths,
-                    Recovered:totalRecovered,
+                    Confirmed:totalConfirmed || 0, 
+                    Deaths:totalDeaths || 0,
+                    Recovered:totalRecovered || 0,
                     DataSource: "bing.com/covid"
                 };
 

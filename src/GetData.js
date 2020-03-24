@@ -70,9 +70,9 @@ class GetData {
         return fetch(urlRequest).then(async (res) => {
             const data = await res.json();
             const Country_Region_Total ="Total";
-            const Confirmed_Total = data.totalConfirmed;
-            const Deaths_Total = data.totalDeaths;
-            const Recovered_Total = data.totalRecovered;
+            const Confirmed_Total = data.totalConfirmed || 0;
+            const Deaths_Total = data.totalDeaths || 0;
+            const Recovered_Total = data.totalRecovered || 0;
             const jsonTotal ={
                 Country_Region: Country_Region_Total,
                 Confirmed: Confirmed_Total,

@@ -65,7 +65,6 @@ const downloadFiles = async () => {
         Utils.log(`Staring downloadFiles...`);
         
         const statuses = await UpadateData();
-
         const countries = new Countries(__dirname);
         const flags = new Flags(__dirname);
 

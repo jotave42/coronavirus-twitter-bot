@@ -61,14 +61,35 @@ class GetData {
     }
 
     async getCoronaNumbersSource1(forced){
-        Utils.log(`Starting Download From Source 1..`);
-        let statuses = [];
-        const urlRequest =  `https://www.bing.com/covid/data?IG=E81814C66A2A447DA6D481B7449EE62E`;        
-        const fileFolder = path.join(this.rootFolder, "Downloads", "Source", "1");
+        try{
+            Utils.log(`Starting Download From Source 1..`);
+            const fileFolder = path.join(this.rootFolder, "Downloads", "Source", "1");
+            
+            Utils.checkAndCreateFolder(fileFolder);
+            
+          
+            let statuses = [];
+            const coronaURL = "https://www.bing.com/covid";
+            Utils.log(`Opening browser.`);
+
+            const browser = await pup.launch();
+            const page = await browser.newPage();
+            await page.setDefaultNavigationTimeout(0);
+            await page.setJavaScriptEnabled(false);
         
-        Utils.checkAndCreateFolder(fileFolder);
-        return fetch(urlRequest).then(async (res) => {
-            const data = await res.json();
+            Utils.log(`Going to ${coronaURL}.`);
+            await page.goto(coronaURL);
+        
+            Utils.log(`Loaded ${coronaURL}.`);
+            let bodyHTML = await page.evaluate(() => document.body.innerHTML);
+            let site = cheerio.load(bodyHTML);
+            const covid = site("#main > script").toString().replace(`<script type="text/javascript">var data=`,"").replace(`;</script>`,"");
+            const data = await JSON.parse(covid);
+            Utils.log(`Closing Browser.`);
+            await browser.close();
+
+            Utils.log(`Geting Data.`);
+        
             const Country_Region_Total ="Total";
             const Confirmed_Total = data.totalConfirmed || 0;
             const Deaths_Total = data.totalDeaths || 0;
@@ -105,9 +126,9 @@ class GetData {
                 statuses = this.createNewStatus(fileName,newJson,statuses,forced);
             });
             return statuses;
-        }).catch((err) => {
-            Utils.log(`ERROR ${err}`, 'error');
-        });
+        }catch(err){
+
+        }
     }   
 
     async getCoronaNumbersSource2(force){

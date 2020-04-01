@@ -66,7 +66,6 @@ class GetData {
             const fileFolder = path.join(this.rootFolder, "Downloads", "Source", "1");
             
             Utils.checkAndCreateFolder(fileFolder);
-            
           
             let statuses = [];
             const coronaURL = "https://www.bing.com/covid";
@@ -89,6 +88,8 @@ class GetData {
             await browser.close();
 
             Utils.log(`Geting Data.`);
+
+     
         
             const Country_Region_Total ="Total";
             const Confirmed_Total = data.totalConfirmed || 0;

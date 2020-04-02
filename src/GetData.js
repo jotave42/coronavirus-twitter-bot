@@ -70,7 +70,12 @@ class GetData {
             const coronaURL = "https://www.bing.com/covid";
             Utils.log(`Opening browser.`);
 
-            const browser = await pup.launch();
+            const browser = await pup.launch({
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                ],
+            });
             const page = await browser.newPage();
             await page.setDefaultNavigationTimeout(0);
             await page.setRequestInterception(true);

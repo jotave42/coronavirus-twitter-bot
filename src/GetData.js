@@ -3,6 +3,7 @@ const path = require("path");
 const fetch = require("node-fetch");
 const pup = require("puppeteer");
 const cheerio = require("cheerio");
+const sleep = require('util').promisify(setTimeout);
 
 class GetData {
     constructor(projectFolder){
@@ -18,7 +19,7 @@ class GetData {
     }
     createNewStatus(fileName, newJson, statuses, forced){
         if(forced){
-            Utils.log(`FORCED: ${newJson.Country_Region}`);
+            Utils.log(`FORCED: ${newJson.Country_Region} by ${newJson.DataSource}`);
             statuses.push({
                 newJson,
                 fileName,
@@ -63,34 +64,69 @@ class GetData {
     async getCoronaNumbersSource1(forced){
         try{
             Utils.log(`Starting Download From Source 1..`);
-            const fileFolder = path.join(this.rootFolder, "Downloads", "Source", "1");
-            
-            Utils.checkAndCreateFolder(fileFolder);
           
             let statuses = [];
+            const responses = [];
             const coronaURL = "https://www.bing.com/covid";
             Utils.log(`Opening browser.`);
 
             const browser = await pup.launch();
             const page = await browser.newPage();
             await page.setDefaultNavigationTimeout(0);
-            await page.setJavaScriptEnabled(false);
+            await page.setRequestInterception(true);
+            await page.setJavaScriptEnabled(true);
         
             Utils.log(`Going to ${coronaURL}.`);
+            page.on("request", request => {
+                const url = request.url();
+                request.continue();
+            });
+            page.on("response", response => {
+                const request = response.request();
+                const url = request.url();
+                const status = response.status();
+    
+                if(url.indexOf("data:image")<0){
+                    Utils.log(`response url: ${url} status: ${status}`,"debug");
+                    responses.push({
+                        url,
+                        status,
+                        response
+                    });
+                }
+             
+              });
+             
             await page.goto(coronaURL);
-        
-            Utils.log(`Loaded ${coronaURL}.`);
-            let bodyHTML = await page.evaluate(() => document.body.innerHTML);
-            let site = cheerio.load(bodyHTML);
-            const covid = site("#main > script").toString().replace(`<script type="text/javascript">var data=`,"").replace(`;</script>`,"");
-            const data = await JSON.parse(covid);
+            await page.waitForResponse(response => response.url().indexOf("https://www.bing.com/covid/data"),120);
+            let dataRes =[];
+            Utils.log(`Geting Data.`);
+            const maxAttempt = 120; 
+            let attempt = 0;
+            while( (dataRes.length ==0) && (attempt != maxAttempt) ){
+                await sleep(1000);
+                const freezeResponse =responses;
+                dataRes = freezeResponse.filter((localResponse)=>{
+                    if(localResponse.url.indexOf("https://www.bing.com/covid/data")>-1){
+                        return localResponse;
+                    }
+                });
+                attempt++;
+            }
+            if (dataRes.length == 0){
+                Utils.log("Error: Target https://www.bing.com/covid/data not found","error");
+                return;
+            } 
+            if (dataRes[0].status != 200){
+                Utils.log("Error: Target https://www.bing.com/covid/data responded with an error","error");
+                Utils.log(dataRes[0].response,"error");
+                return;
+            }
+            const data =await dataRes[0].response.json();
             Utils.log(`Closing Browser.`);
             await browser.close();
-
             Utils.log(`Geting Data.`);
-
-     
-        
+            const fileFolder = path.join(this.rootFolder, "Downloads", "Source", "1");
             const Country_Region_Total ="Total";
             const Confirmed_Total = data.totalConfirmed || 0;
             const Deaths_Total = data.totalDeaths || 0;
@@ -103,8 +139,7 @@ class GetData {
                 DataSource: "bing.com/covid"
             };
             const fileNameTotal = path.join(fileFolder, Country_Region_Total + ".json");
-
-            statuses = this.createNewStatus(fileNameTotal,jsonTotal,statuses);
+            statuses = this.createNewStatus(fileNameTotal,jsonTotal,statuses,forced);
             Utils.log(`Number of countris fetched: ${data.areas.length}`)
             data.areas.forEach((element) => {
                 const node = element;
@@ -128,7 +163,7 @@ class GetData {
             });
             return statuses;
         }catch(err){
-
+            Utils.log(`ERROR: ${err}`,"error");
         }
     }   
 
@@ -182,7 +217,7 @@ class GetData {
                     "Confirmed": parseInt($document.find("td:nth-child(2)").text().trim().replace(',', '')),
                     "Deaths": $document.find("td:nth-child(4)").text().trim() == "" ? 0 : parseInt($document.find("td:nth-child(4)").text().trim().replace(',', '')),
                     "Recovered": $document.find("td:nth-child(6)").text().trim() == "" ? 0 : parseInt($document.find("td:nth-child(6)").text().trim().replace(',', '')),
-                    "DataSource": "tinyurl.com/s4gvvck"
+                    "DataSource": "worldometers.info/coronavirus/"
                 };
                 const jsonFileName = newJson.Country_Region.replace(':', "") + ".json";
                 const fileName = path.join(fileFolder, jsonFileName);

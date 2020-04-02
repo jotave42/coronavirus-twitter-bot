@@ -1,10 +1,15 @@
 const fs  = require("fs-extra");
 const path = require("path");
 class Utils {
-    static log(msg, type = 'log'){
-        const timestamp =  new Date().toLocaleString("pt-BR");
-        const loggerFunction = console[type];
-        loggerFunction(`[${timestamp}] ${msg}`);
+    static log(msg, type = 'log',debugMode){
+        if( (type!="debug") || ( (type!="debug")&&(debugMode) ) ){
+            const timestamp =  new Date().toLocaleString("pt-BR");
+            const loggerFunction = console[type];
+            loggerFunction(`[${timestamp}]`,msg);
+            if(type =="error"){
+                process.exit(0);
+            }
+        }
     }
 
     static saveFile(jsonFile, fileName, noLog){

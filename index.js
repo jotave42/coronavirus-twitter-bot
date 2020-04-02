@@ -69,10 +69,10 @@ const downloadFiles = async () => {
         const flags = new Flags(__dirname);
 
         countries.creatCountriesJson();
-        flags.creatFlagJson();
+        await flags.creatFlagJson();
 
-        const twitterBot = new TwitterBot(tokens, __dirname);
-        await twitterBot.TweetThread(statuses).catch((err)=>{Utils.log(`ERROR: ${err}`,`error`);});
+        //const twitterBot = new TwitterBot(tokens, __dirname);
+        //await twitterBot.TweetThread(statuses).catch((err)=>{Utils.log(`ERROR: ${err}`,`error`);});
         
         
         

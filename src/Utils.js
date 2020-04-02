@@ -6,9 +6,6 @@ class Utils {
             const timestamp =  new Date().toLocaleString("pt-BR");
             const loggerFunction = console[type];
             loggerFunction(`[${timestamp}]`,msg);
-            if(type =="error"){
-                process.exit(0);
-            }
         }
     }
 

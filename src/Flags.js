@@ -72,6 +72,7 @@ class Flags {
         flagsJson["Caribbean Netherlands"] = flagsJson["Netherlands"];
         flagsJson["St. Vincent Grenadines"] = flagsJson["Saint Vincent and the Grenadines"];
         flagsJson["Turks and Caicos"] = flagsJson["Turks and Caicos Islands"];
+        flagsJson["Saint Pierre Miquelon"] = flagsJson["Saint Pierre and Miquelon"];
         return flagsJson;
     };
     async creatFlagJson(){

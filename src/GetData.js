@@ -219,9 +219,9 @@ class GetData {
                 const $document = $(this);
                 const newJson = {
                     "Country_Region": $document.find("td:nth-child(1) > span").text().trim() != "" ? $document.find("td:nth-child(1) > span").text().trim() : $document.find("td:nth-child(1)").text().trim(),
-                    "Confirmed": parseInt($document.find("td:nth-child(2)").text().trim().replace(',', '')),
-                    "Deaths": $document.find("td:nth-child(4)").text().trim() == "" ? 0 : parseInt($document.find("td:nth-child(4)").text().trim().replace(',', '')),
-                    "Recovered": $document.find("td:nth-child(6)").text().trim() == "" ? 0 : parseInt($document.find("td:nth-child(6)").text().trim().replace(',', '')),
+                    "Confirmed": parseInt($document.find("td:nth-child(2)").text().trim().replace(/,/ig, '')),
+                    "Deaths": $document.find("td:nth-child(4)").text().trim() == "" ? 0 : parseInt($document.find("td:nth-child(4)").text().trim().replace(/,/ig, '')),
+                    "Recovered": $document.find("td:nth-child(6)").text().trim() == "" ? 0 : parseInt($document.find("td:nth-child(6)").text().trim().replace(/,/ig, '')),
                     "DataSource": "worldometers.info/coronavirus/"
                 };
                 const jsonFileName = newJson.Country_Region.replace(':', "") + ".json";

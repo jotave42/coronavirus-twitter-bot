@@ -113,7 +113,7 @@ const main = async () => {
     Utils.log(`Staring Bot...`);
     await updateFiles().catch((err)=>{Utils.log(`ERROR: ${err}`,`error`)});
     downloadFiles();
-    setInterval(downloadFiles, 20 * 60 * 1000);
+    setInterval(downloadFiles, 25 * 60 * 1000);
     setInterval(replayMentions, 30 * 1000);
 }
 main();
